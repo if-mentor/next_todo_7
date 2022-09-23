@@ -117,4 +117,4 @@ issue#３ Todo の作成画面の実装の場合
   - chore: その他環境構築など雑用
 
 例）
-`git commit -m '#3 refactor: Todo作成画面のレイアウト調整' `
+`git commit zz-m '#3 refactor: Todo作成画面のレイアウト調整' `
