@@ -1,6 +1,23 @@
 import React, { useState } from 'react'
 import Link from 'next/link';
-import { Box, Button, Flex, Heading, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spacer, Text, Textarea, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spacer,
+  Text,
+  Textarea,
+  useDisclosure
+} from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
 import styles from '../styles/Detail.module.css'
 
