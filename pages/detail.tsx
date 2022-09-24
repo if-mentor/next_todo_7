@@ -4,6 +4,8 @@ import {
   Box,
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   Heading,
   Input,
   Modal,
@@ -49,30 +51,32 @@ const Detail = () => {
             <Button size='sm' onClick={onOpen}>Comment</Button>
             <Modal isOpen={isOpen} onClose={onClose}>
               <ModalOverlay />
-              <ModalContent top='20%'>
-                <ModalHeader>Comment</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <Box>
-                    <Text fontWeight='bold'>Name</Text>
-                    <Input />
-                  </Box>
+              <FormControl>
+                <ModalContent top='20%'>
+                  <ModalHeader>Comment</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <Box>
+                      <FormLabel fontWeight='bold'>Name</FormLabel>
+                      <Input type='text' />
+                    </Box>
 
-                  <Box mt='5'>
-                    <Text fontWeight='bold'>Comment</Text>
-                    <Textarea minH='200px' maxH='300px'/>
-                  </Box>
-                </ModalBody>
+                    <Box mt='5'>
+                      <FormLabel fontWeight='bold'>Comment</FormLabel>
+                      <Textarea minH='200px' maxH='300px'/>
+                    </Box>
+                  </ModalBody>
 
-                <ModalFooter>
-                  <Button colorScheme='blue' color='white'>
-                    Create
-                  </Button>
-                  <Button colorScheme='red' mr='3' ml='10' onClick={onClose}>
-                    Close
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
+                  <ModalFooter>
+                    <Button colorScheme='blue' color='white'>
+                      Create
+                    </Button>
+                    <Button colorScheme='red' mr='3' ml='10' onClick={onClose}>
+                      Close
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </FormControl>
             </Modal>
 
             <Link href='/'>
