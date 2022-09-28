@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import Head from 'next/head';
 import {
-  Heading,
   Box,
   Container,
   Flex,
   Stack,
-  VStack,
   HStack,
+  Button,
   Input,
   Spacer,
   Text,
   Image,
-  Button,
   Select,
   TableContainer,
   Table,
@@ -53,7 +50,7 @@ const top = () => {
 
   return (
     <>
-      <Container p="20px 100px 0" m="0" w="100%" maxW="1080px">
+      <Container p="20px 100px 0" w="100%" maxW="1080px">
         <Box pb="15px">
           <Text
             fontSize="28px"
@@ -105,7 +102,7 @@ const top = () => {
             <Image src="New Icon Button.png" />
           </HStack>
         </Flex>
-        <TableContainer w="1000px" m="33px 0 16px">
+        <TableContainer w="100%" m="33px 0 16px">
           <Table>
             <Thead h="56px" bg="green.300">
               <Tr>
@@ -114,7 +111,8 @@ const top = () => {
                   color="blackAlpha.800"
                   textTransform="none"
                   textAlign="left"
-                  pl="10px"
+                  p="0 0 0 10px"
+                  minW="100px"
                 >
                   Task
                 </Th>
@@ -123,6 +121,8 @@ const top = () => {
                   color="blackAlpha.800"
                   textTransform="none"
                   textAlign="center"
+                  p="0"
+                  minW="100px"
                 >
                   Status
                 </Th>
@@ -131,6 +131,8 @@ const top = () => {
                   color="blackAlpha.800"
                   textTransform="none"
                   textAlign="center"
+                  p="0"
+                  minW="100px"
                 >
                   Priority
                 </Th>
@@ -139,6 +141,8 @@ const top = () => {
                   color="blackAlpha.800"
                   textTransform="none"
                   textAlign="center"
+                  p="0"
+                  minW="100px"
                 >
                   Create
                 </Th>
@@ -147,6 +151,8 @@ const top = () => {
                   color="blackAlpha.800"
                   textTransform="none"
                   textAlign="center"
+                  p="0"
+                  minW="100px"
                 >
                   Update
                 </Th>
@@ -155,6 +161,8 @@ const top = () => {
                   color="blackAlpha.800"
                   textTransform="none"
                   textAlign="center"
+                  p="0"
+                  minW="100px"
                 >
                   Action
                 </Th>
@@ -180,7 +188,7 @@ const top = () => {
                       </Box>
                     </Td>
                     <Td textAlign="center">
-                      <Select placeholder={todo.priority}>
+                      <Select value={todo.priority}>
                         <option value="option1">High</option>
                         <option value="option2">Middle</option>
                         <option value="option3">Low</option>
@@ -205,11 +213,13 @@ const top = () => {
           </Table>
         </TableContainer>
         <HStack justify="center" align="center">
+          <Box sx={pagenation}>＜</Box>
           <Box sx={pagenation}>1</Box>
           <Box sx={pagenation}>2</Box>
           <Box sx={pagenation}>...</Box>
           <Box sx={pagenation}>5</Box>
           <Box sx={pagenation}>6</Box>
+          <Box sx={pagenation}>＞</Box>
         </HStack>
       </Container>
     </>
