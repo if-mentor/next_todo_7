@@ -26,14 +26,14 @@ import styles from '../styles/Detail.module.css'
 const Detail = () => {
   // sample
   const [comments, useComments] = useState([
-    {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
-    {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
-    {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
-    {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
-    {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
-    {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
-    {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
-    {name: 'じょん', text: 'Test Test Test Test Test Test Test'}
+    {name: 'じょん', text: 'Test Test Test Test Test Test Test', create_date: '2022/10/1', update_date: '2022/11/1'},
+    {name: 'じょん', text: 'Test Test Test Test Test Test Test', create_date: '2022/11/1', update_date: '2022/11/1'},
+    {name: 'じょん', text: 'Test Test Test Test Test Test Test', create_date: '2022/12/1', update_date: '2022/11/1'},
+    {name: 'じょん', text: 'Test Test Test Test Test Test Test', create_date: '2022/10/1', update_date: '2022/11/1'},
+    {name: 'じょん', text: 'Test Test Test Test Test Test Test', create_date: '2022/11/1', update_date: '2022/11/1'},
+    {name: 'じょん', text: 'Test Test Test Test Test Test Test', create_date: '2022/12/1', update_date: '2022/11/1'},
+    {name: 'じょん', text: 'Test Test Test Test Test Test Test', create_date: '2022/10/1', update_date: '2022/11/1'},
+    {name: 'じょん', text: 'Test Test Test Test Test Test Test', create_date: '2022/11/1', update_date: '2022/11/1'}
   ])
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -119,13 +119,13 @@ const Detail = () => {
               <Box className={styles.time} fontWeight='bold'>
                 create
                 <br/>
-                2022/10/1
+                2022/10/1 19:00
               </Box>
               <Spacer />
               <Box className={styles.time} fontWeight='bold'>
-                create
+                update
                 <br/>
-                2022/10/1
+                2022/10/1 20:00
               </Box>
             </Flex>
           </Box>
@@ -136,7 +136,7 @@ const Detail = () => {
               <Box mt='5' border='1px' borderRadius='20px' overflow='hidden' key={index}>
                 <Flex justifyContent='space-between' bg='green.300'>
                   <Text fontWeight='bold' ml='5'>{comment.name}</Text>
-                  <Text mr='5'>2022/10/1</Text>
+                  <Text mr='5'>{comment.create_date}</Text>
                 </Flex>
                 <Box p='10px 20px 0' minH='20px' bg='white'>
                   {comment.text} 
