@@ -25,7 +25,7 @@ import styles from '../styles/Detail.module.css'
 
 const Detail = () => {
   // sample
-  const [comments, useComment] = useState([
+  const [comments, useComments] = useState([
     {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
     {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
     {name: 'じょん', text: 'Test Test Test Test Test Test Test'},
