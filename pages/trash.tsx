@@ -20,7 +20,7 @@ import {
   Td,
 } from '@chakra-ui/react';
 
-const top = () => {
+const trash = () => {
   const [todos, setTodos] = useState([
     {
       id: 1,
@@ -50,57 +50,57 @@ const top = () => {
 
   return (
     <>
-      <Container p="20px 100px 0" w="100%" maxW="1080px">
-        <Box pb="15px">
+      <Container p="20px 100px 0" w="100%" maxW="auto">
+        <Flex justify="space-between">
           <Text
             fontSize="28px"
             fontWeight="700"
             color="blackAlpha.800"
             lineHeight="33px"
           >
-            TODO LIST
+            TRASH
           </Text>
-        </Box>
-        <Flex alignItems="flex-start">
-          <HStack w="600px" spacing="24px" alignItems="flex-end">
-            <Stack sx={filterBox}>
-              <Text sx={filterTitle}>SEARCH</Text>
-              <Input placeholder="Text" />
-            </Stack>
-            <Stack sx={filterBox}>
-              <Text sx={filterTitle}>STATUS</Text>
-              <Select placeholder="- - - - - - -">
-                <option value="option1">Not Starting</option>
-                <option value="option2">Doing</option>
-                <option value="option3">Done</option>
-              </Select>
-            </Stack>
-            <Stack sx={filterBox}>
-              <Text sx={filterTitle}>PRIORITY</Text>
-              <Select placeholder="- - - - - - -">
-                <option value="option1">High</option>
-                <option value="option2">Middle</option>
-                <option value="option3">Low</option>
-              </Select>
-            </Stack>
+          <Flex justify="end" align="center">
             <Button
-              type="button"
-              color="black"
-              bg="blackAlpha.500"
-              borderColor="blackAlpha.800"
-              p="0 50px"
-              size="md"
-              borderRadius="50px"
+              color="white"
+              variant="outline"
+              bgColor="red.500"
+              w="112px"
+              h="40px"
+              borderRadius="3xl"
+              fontSize="18px"
+              fontWeight="bold"
             >
-              RESET
+              Delete all
             </Button>
-          </HStack>
-          <Spacer />
-          <HStack spacing="16px">
-            <Image src="Trash Icon Button.png" />
-            <Image src="Draft Icon Button.png" />
-            <Image src="New Icon Button.png" />
-          </HStack>
+            <Button
+              color="white"
+              variant="outline"
+              bgColor="blue.300"
+              w="112px"
+              h="40px"
+              borderRadius="3xl"
+              fontSize="18px"
+              fontWeight="bold"
+              ml="24px"
+            >
+              Resotre all
+            </Button>
+            <Button
+              color="black"
+              variant="outline"
+              bgColor="green.300"
+              w="112px"
+              h="40px"
+              borderRadius="50px"
+              borderColor="black.700"
+              fontSize="18px"
+              fontWeight="bold"
+              ml="24px"
+            >
+              Back
+            </Button>
+          </Flex>
         </Flex>
         <TableContainer w="100%" m="33px 0 16px">
           <Table>
@@ -183,6 +183,7 @@ const top = () => {
                         borderRadius="50px"
                         bg="green.600"
                         color="#F0FFF4"
+                        fontWeight="bold"
                       >
                         <Text>{todo.status}</Text>
                       </Box>
@@ -202,8 +203,32 @@ const top = () => {
                     </Td>
                     <Td>
                       <HStack spacing="16px" justify="center">
-                        <Image src="Edit.png" />
-                        <Image src="Trash.png" />
+                        <Button
+                          color="white"
+                          variant="outline"
+                          bgColor="red.500"
+                          w="80px"
+                          h="40px"
+                          borderRadius="3xl"
+                          fontSize="18px"
+                          fontWeight="bold"
+                          p="0"
+                        >
+                          Delete
+                        </Button>
+                        <Button
+                          color="white"
+                          variant="outline"
+                          bgColor="blue.300"
+                          w="80px"
+                          h="40px"
+                          borderRadius="3xl"
+                          fontSize="18px"
+                          fontWeight="bold"
+                          p="0"
+                        >
+                          Restore
+                        </Button>
                       </HStack>
                     </Td>
                   </Tr>
@@ -246,4 +271,4 @@ const pagenation = {
   color: 'blackAlpha.800',
 };
 
-export default top;
+export default trash;
