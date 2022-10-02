@@ -34,7 +34,7 @@ const trash = () => {
       id: 2,
       task: 'test2',
       status: 'DOING',
-      priority: 'High',
+      priority: 'Low',
       create_date: '2020-11-8 18:55',
       update_date: '2020-11-8 18:55',
     },
@@ -188,12 +188,21 @@ const trash = () => {
                         <Text>{todo.status}</Text>
                       </Box>
                     </Td>
-                    <Td textAlign="center">
-                      <Select value={todo.priority}>
-                        <option value="option1">High</option>
-                        <option value="option2">Middle</option>
-                        <option value="option3">Low</option>
-                      </Select>
+                    <Td
+                      w="174px"
+                      h="56px"
+                      color="green.100"
+                      textAlign="center"
+                      fontSize="16px"
+                      letterSpacing="0.3em"
+                      fontWeight="medium"
+                      lineHeight="40px"
+                      textShadow="1px 1px 0 black, -1px -1px 0 black,
+											-1px 1px 0 black, 1px -1px 0 black,
+											0px 1px 0 black,  0 -1px 0 black,
+											-1px 0 0 black, 1px 0 0 black;"
+                    >
+                      {todo.priority}
                     </Td>
                     <Td fontSize="14px" textAlign="center">
                       {todo.create_date}
