@@ -84,7 +84,7 @@ const trash = () => {
               fontWeight="bold"
               ml="24px"
             >
-              Resotre all
+              Restore all
             </Button>
             <Button
               color="black"
@@ -154,16 +154,6 @@ const trash = () => {
                   p="0"
                   minW="100px"
                 >
-                  Update
-                </Th>
-                <Th
-                  fontSize="24px"
-                  color="blackAlpha.800"
-                  textTransform="none"
-                  textAlign="center"
-                  p="0"
-                  minW="100px"
-                >
                   Action
                 </Th>
               </Tr>
@@ -206,9 +196,6 @@ const trash = () => {
                     </Td>
                     <Td fontSize="14px" textAlign="center">
                       {todo.create_date}
-                    </Td>
-                    <Td fontSize="14px" textAlign="center">
-                      {todo.update_date}
                     </Td>
                     <Td>
                       <HStack spacing="16px" justify="center">
