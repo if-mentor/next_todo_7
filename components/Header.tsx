@@ -9,7 +9,7 @@ export const Header = () => {
     date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
 
   return (
-    <Flex h="80px" bgColor="green.300" alignItems="center" position='fixed'>
+    <Flex h="80px" bgColor="green.300" alignItems="center" position='fixed' w='100%'>
       <Heading
         color="blackAlpha.800"
         ml="100px"
