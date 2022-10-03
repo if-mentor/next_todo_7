@@ -2,13 +2,19 @@
 
 ## 開発メンバー
 
-- 管理： Shogo （washogo）
+- 参加メンバー:
+  - 高橋-t
+  - Maru
+  - Mai Komura
+  - カジ
+  - Takumi Kojo
+  - shinagawa
+  - 雄大
+- 管理： Shogo
 - リーダー:（Issue 管理など）
 - レビュワー: メンバー全員
-- デザイン：
-- サポート:
-  - Shogo
-- 参加メンバー:高橋
+- デザイン： nobody
+- サポート: Shogo
 
 ## 使用技術
 
