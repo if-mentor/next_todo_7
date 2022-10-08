@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -46,10 +46,58 @@ const top = () => {
       create_date: '2020-11-8 18:55',
       update_date: '2020-11-8 18:55',
     },
+    {
+      id: 4,
+      task: 'test4',
+      status: 'NOT STARTED',
+      priority: 'Low',
+      create_date: '2020-11-8 18:55',
+      update_date: '2020-11-8 18:55',
+    },
   ]);
 
   const statuses = ['NOT STARTED', 'DOING', 'DONE'];
   const priorities = ['High', 'Middle', 'Low'];
+
+  const [filterQuery, setFilterQuery] = useState('');
+  console.log(filterQuery);
+
+  const filteredTodos = useMemo(() => {
+    if (
+      filterQuery.status === undefined &&
+      filterQuery.priority === undefined
+    ) {
+      return todos;
+    }
+    let tmpTodos = todos;
+    tmpTodos = tmpTodos.filter((row) => {
+      if (filterQuery.status && filterQuery.priority) {
+        if (
+          filterQuery.status === row.status &&
+          filterQuery.priority === row.priority
+        ) {
+          return row;
+        }
+        return false;
+      }
+      if (filterQuery.status === row.status) {
+        return row;
+      }
+      if (filterQuery.priority === row.priority) {
+        return row;
+      }
+      return false;
+    });
+    return tmpTodos;
+  }, [todos, filterQuery]);
+
+  const handleFilter = (e) => {
+    const { name, value } = e.target;
+    //Memo: スプレッド構文で、フィルタリング要素をfilterQueryに追加
+    setFilterQuery({ ...filterQuery, [name]: value });
+    //TODO: ここでConsoleすると、valueがひとつ前に選択した値になるのはなぜ？
+    // console.log(filterQuery);
+  };
 
   return (
     <>
@@ -72,7 +120,12 @@ const top = () => {
             </Stack>
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>STATUS</Text>
-              <Select placeholder="- - - - - - -">
+              <Select
+                name="status"
+                placeholder="- - - - - - -"
+                value={filterQuery.status}
+                onChange={handleFilter}
+              >
                 {statuses.map((status) => (
                   <option key={status} value={status}>
                     {status}
@@ -82,7 +135,12 @@ const top = () => {
             </Stack>
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>PRIORITY</Text>
-              <Select placeholder="- - - - - - -">
+              <Select
+                name="priority"
+                placeholder="- - - - - - -"
+                value={filterQuery.priority}
+                onChange={handleFilter}
+              >
                 {priorities.map((priority) => (
                   <option key={priority} value={priority}>
                     {priority}
@@ -176,7 +234,7 @@ const top = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {todos.map((todo) => {
+              {filteredTodos.map((todo) => {
                 return (
                   <Tr key={todo.id}>
                     <Td textAlign="left" pl="10px">
