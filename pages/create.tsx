@@ -40,18 +40,6 @@ type FormValues = {
 // top:TOPページ、draft:DRAFTページ、trash:trashページにそれぞれ表示
 type Category = "top" | "draft" | "trash";
 
-type TodoFormat = {
-  id: null | number;
-  title: null | string;
-  detail: null | string;
-  // 0:NOT STARTED、1:DOING、2:DONE
-  status: null | 0 | 1 | 2;
-  priority: string;
-  createAt: null | string;
-  updateAt: null | string;
-  category: Category;
-};
-
 const create: React.FC = () => {
   const {
     handleSubmit,
