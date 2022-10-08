@@ -34,7 +34,7 @@ const top = () => {
       id: 2,
       task: 'test2',
       status: 'DOING',
-      priority: 'High',
+      priority: 'Middle',
       create_date: '2020-11-8 18:55',
       update_date: '2020-11-8 18:55',
     },
@@ -42,11 +42,14 @@ const top = () => {
       id: 3,
       task: 'test3',
       status: 'NOT STARTED',
-      priority: 'High',
+      priority: 'Low',
       create_date: '2020-11-8 18:55',
       update_date: '2020-11-8 18:55',
     },
   ]);
+
+  const statuses = ['NOT STARTED', 'DOING', 'DONE'];
+  const priorities = ['High', 'Middle', 'Low'];
 
   return (
     <>
@@ -70,17 +73,21 @@ const top = () => {
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>STATUS</Text>
               <Select placeholder="- - - - - - -">
-                <option value="option1">Not Starting</option>
-                <option value="option2">Doing</option>
-                <option value="option3">Done</option>
+                {statuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
               </Select>
             </Stack>
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>PRIORITY</Text>
               <Select placeholder="- - - - - - -">
-                <option value="option1">High</option>
-                <option value="option2">Middle</option>
-                <option value="option3">Low</option>
+                {priorities.map((priority) => (
+                  <option key={priority} value={priority}>
+                    {priority}
+                  </option>
+                ))}
               </Select>
             </Stack>
             <Button
@@ -181,17 +188,29 @@ const top = () => {
                         h="40px"
                         lineHeight="40px"
                         borderRadius="50px"
-                        bg="green.600"
-                        color="#F0FFF4"
+                        bg={
+                          todo.status === 'DOING'
+                            ? 'green.600'
+                            : todo.status === 'DONE'
+                            ? 'green.300'
+                            : 'green.50'
+                        }
+                        color={
+                          todo.status === 'DOING'
+                            ? 'green.50'
+                            : 'blackAlpha.800'
+                        }
                       >
                         <Text>{todo.status}</Text>
                       </Box>
                     </Td>
                     <Td textAlign="center">
-                      <Select value={todo.priority}>
-                        <option value="option1">High</option>
-                        <option value="option2">Middle</option>
-                        <option value="option3">Low</option>
+                      <Select defaultValue={todo.priority}>
+                        {priorities.map((priority) => (
+                          <option key={priority} value={priority}>
+                            {priority}
+                          </option>
+                        ))}
                       </Select>
                     </Td>
                     <Td fontSize="14px" textAlign="center">
