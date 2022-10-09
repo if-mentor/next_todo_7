@@ -21,11 +21,7 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { Header } from "../components/Header";
 import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 type FormValues = {
   title: string;
@@ -42,7 +38,7 @@ const create: React.FC = () => {
     control,
     formState: { errors },
   } = useForm<FormValues>();
-  const [category, setCategory] = React.useState<Category>("top");
+  // const [category, setCategory] = React.useState<Category>("top");
   const router = useRouter();
 
   // validationは適当です。適宜変更してください。
@@ -72,16 +68,11 @@ const create: React.FC = () => {
         create: serverTimestamp(),
         update: null,
         author: "uid", // TODO: 今後uidをstateから取得するように変更？
-        category,
+        category: "top",
       });
     };
     firestoreSubmit();
-
-    if (category === "top") {
-      router.push("/top");
-    } else {
-      router.push("/draft");
-    }
+    router.push("/top");
   };
 
   return (
@@ -161,7 +152,7 @@ const create: React.FC = () => {
 
           <Flex justify="flex-end">
             <ButtonGroup>
-              <Button
+              {/* <Button
                 type="submit"
                 onClick={() => setCategory("draft")}
                 bg="pink.100"
@@ -175,7 +166,7 @@ const create: React.FC = () => {
                 _hover={{ opacity: 0.8 }}
               >
                 DRAFT
-              </Button>
+              </Button> */}
               <Button
                 bg="green.600"
                 color="white"
