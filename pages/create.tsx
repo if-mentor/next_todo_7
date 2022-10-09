@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 import { Header } from "../components/Header";
 import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
@@ -68,33 +69,17 @@ const create: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<FormValues> = (values: FormValues) => {
-    // TODO: login時にsessionStorageにloginUidを入れておくこと
-    const loginUid = sessionStorage.getItem("loginUid");
     const firestoreSubmit = async () => {
       await addDoc(collection(db, "todos"), {
-        id: "yet", // idはfirebaseに自動で作成してもらうため初めに仮の値を入れる
+        id: uuidv4(),
         title: values.title,
         detail: values.detail,
         status: "NOT STARTED",
         priority: values.priority || 2, // 一度もpriorityを変更していない場合値が入れないため調節
         create: serverTimestamp(),
         update: null,
-        author: loginUid,
+        author: "uid", // TODO: uidをstate又はpath又はクエリに入れて受け渡すように今後変更予定
         category,
-      });
-      // id==yetのitemのidを自動取得されたidに置換する
-      const q = await query(collection(db, "todos"), where("id", "==", "yet"));
-      console.log(q);
-      const querySnapshot = await getDocs(q);
-      console.log(querySnapshot);
-      let docId = "";
-      querySnapshot.forEach((doc) => {
-        docId = doc.id;
-        console.log(docId);
-      });
-      const updateRef = doc(db, "todos", docId);
-      updateDoc(updateRef, {
-        id: docId,
       });
 
       // TODO: top画面、draft画面作成後は下記のif blockを削除すること
@@ -102,17 +87,13 @@ const create: React.FC = () => {
         alert(
           `New todo is successfully created.
           Title: ${values.title}
-          Detail: ${
-            values.detail
-          }
+          Detail: ${values.detail}
           Status: ${values.priority || 2}`
         );
       } else {
         alert(
           `Your todo is successfully stored at draft page.
-          Title: ${
-            values.title
-          }
+          Title: ${values.title}
           Detail: ${values.detail}
           Status: ${values.priority || 2}`
         );
