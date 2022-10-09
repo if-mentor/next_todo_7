@@ -25,12 +25,7 @@ import { db } from "../firebase/firebase";
 import {
   addDoc,
   collection,
-  doc,
-  getDocs,
-  query,
   serverTimestamp,
-  updateDoc,
-  where,
 } from "firebase/firestore";
 
 type FormValues = {
@@ -81,32 +76,14 @@ const create: React.FC = () => {
         author: "uid", // TODO: uidをstate又はpath又はクエリに入れて受け渡すように今後変更予定
         category,
       });
-
-      // TODO: top画面、draft画面作成後は下記のif blockを削除すること
-      if (category === "top") {
-        alert(
-          `New todo is successfully created.
-          Title: ${values.title}
-          Detail: ${values.detail}
-          Status: ${values.priority || 2}`
-        );
-      } else {
-        alert(
-          `Your todo is successfully stored at draft page.
-          Title: ${values.title}
-          Detail: ${values.detail}
-          Status: ${values.priority || 2}`
-        );
-      }
     };
     firestoreSubmit();
 
-    // TODO: top画面、draft画面作成後は以下の通り画面遷移をすること
-    // if (category === "top") {
-    //   router.push("/top");
-    // } else {
-    //   router.push("/draft");
-    // }
+    if (category === "top") {
+      router.push("/top");
+    } else {
+      router.push("/draft");
+    }
   };
 
   return (
