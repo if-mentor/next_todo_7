@@ -73,7 +73,7 @@ const create: React.FC = () => {
         priority: values.priority || 2, // 一度もpriorityを変更していない場合値が入れないため調節
         create: serverTimestamp(),
         update: null,
-        author: "uid", // TODO: uidをstate又はpath又はクエリに入れて受け渡すように今後変更予定
+        author: "uid", // TODO: 今後uidをstateから取得するように変更？
         category,
       });
     };
