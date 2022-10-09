@@ -59,18 +59,17 @@ const top = () => {
   const statuses = ['NOT STARTED', 'DOING', 'DONE'];
   const priorities = ['High', 'Middle', 'Low'];
 
-  const [filterQuery, setFilterQuery] = useState('');
-  console.log(filterQuery);
+  const [filterQuery, setFilterQuery] = useState({ status: '', priority: '' });
 
   const filteredTodos = useMemo(() => {
-    if (
-      filterQuery.status === undefined &&
-      filterQuery.priority === undefined
-    ) {
+    console.log(filterQuery);
+    let tmpTodos = todos;
+    //最初のレンダリングと”-----”に戻した時(statusとpriority共になし）用
+    if (filterQuery.status === '' && filterQuery.priority === '') {
       return todos;
     }
-    let tmpTodos = todos;
     tmpTodos = tmpTodos.filter((row) => {
+      //statusとpriorityの両方でFilterするケース
       if (filterQuery.status && filterQuery.priority) {
         if (
           filterQuery.status === row.status &&
@@ -95,7 +94,7 @@ const top = () => {
     const { name, value } = e.target;
     //Memo: スプレッド構文で、フィルタリング要素をfilterQueryに追加
     setFilterQuery({ ...filterQuery, [name]: value });
-    //TODO: ここでConsoleすると、valueがひとつ前に選択した値になるのはなぜ？
+    //Memo: ここでConsoleすると、valueがひとつ前に選択した値になるのはなぜ？
     // console.log(filterQuery);
   };
 
