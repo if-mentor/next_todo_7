@@ -18,7 +18,6 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { v4 as uuidv4 } from "uuid";
 import { Header } from "../components/Header";
 import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
@@ -66,7 +65,6 @@ const create: React.FC = () => {
   const onSubmit: SubmitHandler<FormValues> = (values: FormValues) => {
     const firestoreSubmit = async () => {
       await addDoc(collection(db, "todos"), {
-        id: uuidv4(),
         title: values.title,
         detail: values.detail,
         status: "NOT STARTED",
