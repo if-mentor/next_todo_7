@@ -19,8 +19,10 @@ import {
   Th,
   Td,
 } from '@chakra-ui/react';
+import {useRouter} from 'next/router';
 
 const top = () => {
+  const router = useRouter();
   const [todos, setTodos] = useState([
     {
       id: 1,
@@ -99,7 +101,7 @@ const top = () => {
           <HStack spacing="16px">
             <Image src="Trash Icon Button.png" />
             <Image src="Draft Icon Button.png" />
-            <Image src="New Icon Button.png" />
+            <Image onClick={() => router.push("/create")} src="New Icon Button.png" _hover={{ opacity:0.8, cursor:"pointer" }}/>
           </HStack>
         </Flex>
         <TableContainer w="100%" m="33px 0 16px">
