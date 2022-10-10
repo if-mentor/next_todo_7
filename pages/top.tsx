@@ -19,6 +19,7 @@ import {
   Th,
   Td,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 
 const top = () => {
   const [todos, setTodos] = useState([
@@ -55,6 +56,7 @@ const top = () => {
       update_date: '2020-11-8 18:55',
     },
   ]);
+  const [trashTodos, setTrashTodos] = useState([]);
 
   const statuses = ['NOT STARTED', 'DOING', 'DONE'];
   const priorities = ['High', 'Middle', 'Low'];
@@ -117,13 +119,28 @@ const top = () => {
     // console.log(filterQuery);
   };
 
-  const onClickResetButton = () => {
+  const filterReset = () => {
     setFilterQuery({
       task: '',
       status: '',
       priority: '',
     });
   };
+
+  const trashTodo = (id) => {
+    //trashしたtodoを削除したtodoリスト作成
+    const trashedTodos = todos.filter((todo) => {
+      return todo.id !== id;
+    });
+    setTodos(trashedTodos);
+    //trashページ用にtrashtodoリストを作成
+    const newTrashTodo = todos.find((todo) => {
+      return todo.id === id;
+    });
+    setTrashTodos([...trashTodos, newTrashTodo]);
+  };
+
+  const router = useRouter();
 
   return (
     <>
@@ -180,23 +197,28 @@ const top = () => {
               </Select>
             </Stack>
             <Button
-              type="button"
               color="black"
               bg="blackAlpha.500"
               borderColor="blackAlpha.800"
               p="0 50px"
               size="md"
               borderRadius="50px"
-              onClick={onClickResetButton}
+              onClick={filterReset}
             >
               RESET
             </Button>
           </HStack>
           <Spacer />
           <HStack spacing="16px">
-            <Image src="Trash Icon Button.png" />
-            <Image src="Draft Icon Button.png" />
-            <Image src="New Icon Button.png" />
+            <button onClick={() => router.push('/trash')}>
+              <Image src="Trash Icon Button.png" />
+            </button>
+            <button>
+              <Image src="Draft Icon Button.png" />
+            </button>
+            <button onClick={() => router.push('/create')}>
+              <Image src="New Icon Button.png" />
+            </button>
           </HStack>
         </Flex>
         <TableContainer w="100%" m="33px 0 16px">
@@ -311,8 +333,13 @@ const top = () => {
                     </Td>
                     <Td>
                       <HStack spacing="16px" justify="center">
-                        <Image src="Edit.png" />
-                        <Image src="Trash.png" />
+                        {/* TODO:対象TODOの編集画面に遷移できるようにする */}
+                        <button onClick={() => router.push('/Edit')}>
+                          <Image src="Edit.png" />
+                        </button>
+                        <button onClick={() => trashTodo(todo.id)}>
+                          <Image src="Trash.png" />
+                        </button>
                       </HStack>
                     </Td>
                   </Tr>
