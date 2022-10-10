@@ -59,33 +59,52 @@ const top = () => {
   const statuses = ['NOT STARTED', 'DOING', 'DONE'];
   const priorities = ['High', 'Middle', 'Low'];
 
-  const [filterQuery, setFilterQuery] = useState({ status: '', priority: '' });
+  const [filterQuery, setFilterQuery] = useState({
+    task: '',
+    status: '',
+    priority: '',
+  });
 
   const filteredTodos = useMemo(() => {
-    console.log(filterQuery);
     let tmpTodos = todos;
-    //最初のレンダリングと”-----”に戻した時(statusとpriority共になし）用
-    if (filterQuery.status === '' && filterQuery.priority === '') {
-      return todos;
-    }
     tmpTodos = tmpTodos.filter((row) => {
-      //statusとpriorityの両方でFilterするケース
-      if (filterQuery.status && filterQuery.priority) {
-        if (
-          filterQuery.status === row.status &&
-          filterQuery.priority === row.priority
-        ) {
-          return row;
-        }
-        return false;
+      switch (Object.values(filterQuery).filter((n) => n === '').length) {
+        case 3:
+          return todos;
+        case 2:
+          if (
+            (filterQuery.priority !== '' &&
+              filterQuery.priority === row.priority) ||
+            (filterQuery.status !== '' && filterQuery.status === row.status) ||
+            (filterQuery.task !== '' && row.task.includes(filterQuery.task))
+          ) {
+            return row;
+          }
+        case 1:
+          if (
+            (filterQuery.task == '' &&
+              filterQuery.status === row.status &&
+              filterQuery.priority === row.priority) ||
+            (filterQuery.status == '' &&
+              row.task.includes(filterQuery.task) &&
+              filterQuery.priority === row.priority) ||
+            (filterQuery.priority == '' &&
+              row.task.includes(filterQuery.task) &&
+              filterQuery.status === row.status)
+          ) {
+            return row;
+          }
+        case 0:
+          if (
+            row.task.includes(filterQuery.task) &&
+            filterQuery.status === row.status &&
+            filterQuery.priority === row.priority
+          ) {
+            return row;
+          }
+        default:
+          break;
       }
-      if (filterQuery.status === row.status) {
-        return row;
-      }
-      if (filterQuery.priority === row.priority) {
-        return row;
-      }
-      return false;
     });
     return tmpTodos;
   }, [todos, filterQuery]);
@@ -96,6 +115,14 @@ const top = () => {
     setFilterQuery({ ...filterQuery, [name]: value });
     //Memo: ここでConsoleすると、valueがひとつ前に選択した値になるのはなぜ？
     // console.log(filterQuery);
+  };
+
+  const onClickResetButton = () => {
+    setFilterQuery({
+      task: '',
+      status: '',
+      priority: '',
+    });
   };
 
   return (
@@ -115,7 +142,12 @@ const top = () => {
           <HStack w="600px" spacing="24px" alignItems="flex-end">
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>SEARCH</Text>
-              <Input placeholder="Text" />
+              <Input
+                name="task"
+                placeholder="Text"
+                value={filterQuery.task}
+                onChange={handleFilter}
+              />
             </Stack>
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>STATUS</Text>
@@ -155,6 +187,7 @@ const top = () => {
               p="0 50px"
               size="md"
               borderRadius="50px"
+              onClick={onClickResetButton}
             >
               RESET
             </Button>
