@@ -1,6 +1,10 @@
-import { atom } from "recoil";
+import { atom, RecoilState } from "recoil";
 
-export const userState = atom({
+type User = {
+	uid?: string;
+};
+
+export const userState: RecoilState<User> = atom({
 	key: "userState",
-	default: null,
+	default: {},
 });
