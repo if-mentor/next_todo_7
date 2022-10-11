@@ -19,6 +19,7 @@ import {
   Th,
   Td,
 } from '@chakra-ui/react';
+
 import { useRouter } from 'next/router';
 
 type Todo = {
@@ -233,7 +234,10 @@ const Top: React.FC = () => {
             <button>
               <Image src="Draft Icon Button.png" />
             </button>
-            <button onClick={() => router.push('/create')}>
+            <button
+              onClick={() => router.push('/create')}
+              _hover={{ opacity: 0.8, cursor: 'pointer' }}
+            >
               <Image src="New Icon Button.png" />
             </button>
           </HStack>
