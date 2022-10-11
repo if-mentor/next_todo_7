@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -21,8 +21,23 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 
-const top = () => {
-  const [todos, setTodos] = useState([
+type Todo = {
+  id: number;
+  task: string;
+  status: 'NOT STARTED' | 'DOING' | 'DONE';
+  priority: 'High' | 'Middle' | 'Low';
+  create_date: string; //TODO:Timestampに変更予定
+  update_date: string; //TODO:Timestampに変更予定
+};
+
+type FilterQuery = {
+  task: string;
+  status: '' | 'NOT STARTED' | 'DOING' | 'DONE';
+  priority: '' | 'High' | 'Middle' | 'Low';
+};
+
+const Top: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([
     {
       id: 1,
       task: 'testttttttttttt',
@@ -56,20 +71,20 @@ const top = () => {
       update_date: '2020-11-8 18:55',
     },
   ]);
-  const [trashTodos, setTrashTodos] = useState([]);
-
   const statuses = ['NOT STARTED', 'DOING', 'DONE'];
   const priorities = ['High', 'Middle', 'Low'];
 
-  const [filterQuery, setFilterQuery] = useState({
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>({
     task: '',
     status: '',
     priority: '',
   });
+  const [trashTodos, setTrashTodos] = useState<Todo[]>([]);
 
-  const filteredTodos = useMemo(() => {
-    let tmpTodos = todos;
-    tmpTodos = tmpTodos.filter((row) => {
+  const filteredTodos: Todo[] = useMemo(() => {
+    //Memo:...todosでやると配列のコピーになり、オブジェクトは参照になる
+    let cloneTodos: Todo[] = todos.map((todo) => ({ ...todo }));
+    const tmpTodos = cloneTodos.filter((row) => {
       switch (Object.values(filterQuery).filter((n) => n === '').length) {
         case 3:
           return todos;
@@ -111,15 +126,16 @@ const top = () => {
     return tmpTodos;
   }, [todos, filterQuery]);
 
-  const handleFilter = (e) => {
-    const { name, value } = e.target;
+  const handleFilter = (
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+  ) => {
+    //本当はanyにしない方が良い...(ただし、statusがnumとかになるとstring指定するとerrorになる)
+    const { name, value }: any = e.target;
     //Memo: スプレッド構文で、フィルタリング要素をfilterQueryに追加
     setFilterQuery({ ...filterQuery, [name]: value });
-    //Memo: ここでConsoleすると、valueがひとつ前に選択した値になるのはなぜ？
-    // console.log(filterQuery);
   };
 
-  const filterReset = () => {
+  const filterReset: () => void = () => {
     setFilterQuery({
       task: '',
       status: '',
@@ -127,16 +143,17 @@ const top = () => {
     });
   };
 
-  const trashTodo = (id) => {
+  const trashTodo: (id: number) => void = (id) => {
     //trashしたtodoを削除したtodoリスト作成
-    const trashedTodos = todos.filter((todo) => {
+    const trashedTodos: Todo[] = todos.filter((todo) => {
       return todo.id !== id;
     });
     setTodos(trashedTodos);
     //trashページ用にtrashtodoリストを作成
-    const newTrashTodo = todos.find((todo) => {
+    const newTrashTodo: Todo | undefined = todos.find((todo) => {
       return todo.id === id;
     });
+    if (newTrashTodo === undefined) return;
     setTrashTodos([...trashTodos, newTrashTodo]);
   };
 
@@ -382,4 +399,4 @@ const pagenation = {
   color: 'blackAlpha.800',
 };
 
-export default top;
+export default Top;
