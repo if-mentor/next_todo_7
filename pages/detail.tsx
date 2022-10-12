@@ -54,6 +54,7 @@ const Detail = () => {
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
 			query(
+				//todoのidがまだtopから取得できないので直接ドキュメントidを記載しています
 				// collection(db, "todos", id as string, "comments"),
 				collection(db, "todos", "rvMETyCjqUG5Jk5v3mYm", "comments"),
 				orderBy("timestamp", "desc")
