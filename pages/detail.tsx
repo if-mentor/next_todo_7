@@ -35,6 +35,7 @@ import { EditIcon } from "@chakra-ui/icons";
 import styles from "../styles/Detail.module.css";
 import { useRecoilState } from "recoil";
 import { userState } from "../Atoms/userAtom";
+import { timeStamp } from "console";
 
 type CommentUser = {
 	id: string;
@@ -49,6 +50,21 @@ const Detail = () => {
 	const [comments, setComments] = useState<CommentUser[] | null>(null);
 	const router = useRouter();
 	// const { id } = router.query;
+
+	// Timestamp型から文字列への変換
+	const parseTimestampToDate = (
+		timestamp: Timestamp,
+		separator: string
+	): string => {
+		const date = timestamp.toDate();
+		const year = date.getFullYear();
+		const month = ("00" + (date.getMonth() + 1)).slice(-2);
+		const day = ("00" + date.getDate()).slice(-2);
+		const hour = ("00" + date.getHours()).slice(-2);
+		const minutes = ("00" + date.getMinutes()).slice(-2);
+
+		return `${year}${separator}${month}${separator}${day} ${hour}:${minutes}`;
+	};
 
 	// コメントの取得
 	useEffect(() => {
@@ -65,7 +81,7 @@ const Detail = () => {
 					id: doc.data().id,
 					comment: doc.data().comment,
 					username: doc.data().username,
-					timestamp: doc.data().timestamp.toDate(),
+					timestamp: doc.data().timestamp,
 				}));
 				setComments(userComments);
 			}
@@ -242,7 +258,9 @@ const Detail = () => {
 									<Text fontWeight="bold" ml="5">
 										{comment.username}
 									</Text>
-									<Text mr="5">{comment.timestamp}</Text>
+									<Text mr="5">
+										{parseTimestampToDate(comment.timestamp, "-")}
+									</Text>
 								</Flex>
 								<Box p="10px 20px 0" minH="20px" bg="white">
 									{comment.comment}
