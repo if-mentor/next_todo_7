@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -19,11 +19,26 @@ import {
   Th,
   Td,
 } from '@chakra-ui/react';
-import {useRouter} from 'next/router';
 
-const top = () => {
-  const router = useRouter();
-  const [todos, setTodos] = useState([
+import { useRouter } from 'next/router';
+
+type Todo = {
+  id: number;
+  task: string;
+  status: 'NOT STARTED' | 'DOING' | 'DONE';
+  priority: 'High' | 'Middle' | 'Low';
+  create_date: string; //TODO:Timestampに変更予定
+  update_date: string; //TODO:Timestampに変更予定
+};
+
+type FilterQuery = {
+  task: string;
+  status: '' | 'NOT STARTED' | 'DOING' | 'DONE';
+  priority: '' | 'High' | 'Middle' | 'Low';
+};
+
+const Top: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([
     {
       id: 1,
       task: 'testttttttttttt',
@@ -36,7 +51,7 @@ const top = () => {
       id: 2,
       task: 'test2',
       status: 'DOING',
-      priority: 'High',
+      priority: 'Middle',
       create_date: '2020-11-8 18:55',
       update_date: '2020-11-8 18:55',
     },
@@ -44,11 +59,106 @@ const top = () => {
       id: 3,
       task: 'test3',
       status: 'NOT STARTED',
-      priority: 'High',
+      priority: 'Low',
+      create_date: '2020-11-8 18:55',
+      update_date: '2020-11-8 18:55',
+    },
+    {
+      id: 4,
+      task: 'test4',
+      status: 'NOT STARTED',
+      priority: 'Low',
       create_date: '2020-11-8 18:55',
       update_date: '2020-11-8 18:55',
     },
   ]);
+  const statuses = ['NOT STARTED', 'DOING', 'DONE'];
+  const priorities = ['High', 'Middle', 'Low'];
+
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>({
+    task: '',
+    status: '',
+    priority: '',
+  });
+  const [trashTodos, setTrashTodos] = useState<Todo[]>([]);
+
+  const filteredTodos: Todo[] = useMemo(() => {
+    //Memo:...todosでやると配列のコピーになり、オブジェクトは参照になる
+    let cloneTodos: Todo[] = todos.map((todo) => ({ ...todo }));
+    const tmpTodos = cloneTodos.filter((row) => {
+      switch (Object.values(filterQuery).filter((n) => n === '').length) {
+        case 3:
+          return todos;
+        case 2:
+          if (
+            (filterQuery.priority !== '' &&
+              filterQuery.priority === row.priority) ||
+            (filterQuery.status !== '' && filterQuery.status === row.status) ||
+            (filterQuery.task !== '' && row.task.includes(filterQuery.task))
+          ) {
+            return row;
+          }
+        case 1:
+          if (
+            (filterQuery.task == '' &&
+              filterQuery.status === row.status &&
+              filterQuery.priority === row.priority) ||
+            (filterQuery.status == '' &&
+              row.task.includes(filterQuery.task) &&
+              filterQuery.priority === row.priority) ||
+            (filterQuery.priority == '' &&
+              row.task.includes(filterQuery.task) &&
+              filterQuery.status === row.status)
+          ) {
+            return row;
+          }
+        case 0:
+          if (
+            row.task.includes(filterQuery.task) &&
+            filterQuery.status === row.status &&
+            filterQuery.priority === row.priority
+          ) {
+            return row;
+          }
+        default:
+          break;
+      }
+    });
+    return tmpTodos;
+  }, [todos, filterQuery]);
+
+  const handleFilter = (
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+  ) => {
+    //本当はanyにしない方が良い...(ただし、statusがnumとかになるとstring指定するとerrorになる)
+    const { name, value }: any = e.target;
+    //Memo: スプレッド構文で、フィルタリング要素をfilterQueryに追加
+    setFilterQuery({ ...filterQuery, [name]: value });
+  };
+
+  const filterReset: () => void = () => {
+    setFilterQuery({
+      task: '',
+      status: '',
+      priority: '',
+    });
+  };
+
+  const trashTodo: (id: number) => void = (id) => {
+    //trashしたtodoを削除したtodoリスト作成
+    const trashedTodos: Todo[] = todos.filter((todo) => {
+      return todo.id !== id;
+    });
+    setTodos(trashedTodos);
+    //trashページ用にtrashtodoリストを作成
+    const newTrashTodo: Todo | undefined = todos.find((todo) => {
+      return todo.id === id;
+    });
+    if (newTrashTodo === undefined) return;
+    setTrashTodos([...trashTodos, newTrashTodo]);
+  };
+
+  const router = useRouter();
 
   return (
     <>
@@ -67,41 +177,69 @@ const top = () => {
           <HStack w="600px" spacing="24px" alignItems="flex-end">
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>SEARCH</Text>
-              <Input placeholder="Text" />
+              <Input
+                name="task"
+                placeholder="Text"
+                value={filterQuery.task}
+                onChange={handleFilter}
+              />
             </Stack>
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>STATUS</Text>
-              <Select placeholder="- - - - - - -">
-                <option value="option1">Not Starting</option>
-                <option value="option2">Doing</option>
-                <option value="option3">Done</option>
+              <Select
+                name="status"
+                placeholder="- - - - - - -"
+                value={filterQuery.status}
+                onChange={handleFilter}
+              >
+                {statuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
               </Select>
             </Stack>
             <Stack sx={filterBox}>
               <Text sx={filterTitle}>PRIORITY</Text>
-              <Select placeholder="- - - - - - -">
-                <option value="option1">High</option>
-                <option value="option2">Middle</option>
-                <option value="option3">Low</option>
+              <Select
+                name="priority"
+                placeholder="- - - - - - -"
+                value={filterQuery.priority}
+                onChange={handleFilter}
+              >
+                {priorities.map((priority) => (
+                  <option key={priority} value={priority}>
+                    {priority}
+                  </option>
+                ))}
               </Select>
             </Stack>
             <Button
-              type="button"
               color="black"
               bg="blackAlpha.500"
               borderColor="blackAlpha.800"
               p="0 50px"
               size="md"
               borderRadius="50px"
+              onClick={filterReset}
             >
               RESET
             </Button>
           </HStack>
           <Spacer />
           <HStack spacing="16px">
-            <Image src="Trash Icon Button.png" />
-            <Image src="Draft Icon Button.png" />
-            <Image onClick={() => router.push("/create")} src="New Icon Button.png" _hover={{ opacity:0.8, cursor:"pointer" }}/>
+            <button onClick={() => router.push('/trash')}>
+              <Image src="Trash Icon Button.png" />
+            </button>
+            <button>
+              <Image src="Draft Icon Button.png" />
+            </button>
+            <button
+              onClick={() => router.push('/create')}
+              _hover={{ opacity: 0.8, cursor: 'pointer' }}
+            >
+              <Image src="New Icon Button.png" />
+            </button>
           </HStack>
         </Flex>
         <TableContainer w="100%" m="33px 0 16px">
@@ -171,7 +309,7 @@ const top = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {todos.map((todo) => {
+              {filteredTodos.map((todo) => {
                 return (
                   <Tr key={todo.id}>
                     <Td textAlign="left" pl="10px">
@@ -183,17 +321,29 @@ const top = () => {
                         h="40px"
                         lineHeight="40px"
                         borderRadius="50px"
-                        bg="green.600"
-                        color="#F0FFF4"
+                        bg={
+                          todo.status === 'DOING'
+                            ? 'green.600'
+                            : todo.status === 'DONE'
+                            ? 'green.300'
+                            : 'green.50'
+                        }
+                        color={
+                          todo.status === 'DOING'
+                            ? 'green.50'
+                            : 'blackAlpha.800'
+                        }
                       >
                         <Text>{todo.status}</Text>
                       </Box>
                     </Td>
                     <Td textAlign="center">
-                      <Select value={todo.priority}>
-                        <option value="option1">High</option>
-                        <option value="option2">Middle</option>
-                        <option value="option3">Low</option>
+                      <Select defaultValue={todo.priority}>
+                        {priorities.map((priority) => (
+                          <option key={priority} value={priority}>
+                            {priority}
+                          </option>
+                        ))}
                       </Select>
                     </Td>
                     <Td fontSize="14px" textAlign="center">
@@ -204,8 +354,13 @@ const top = () => {
                     </Td>
                     <Td>
                       <HStack spacing="16px" justify="center">
-                        <Image src="Edit.png" />
-                        <Image src="Trash.png" />
+                        {/* TODO:対象TODOの編集画面に遷移できるようにする */}
+                        <button onClick={() => router.push('/edit')}>
+                          <Image src="Edit.png" />
+                        </button>
+                        <button onClick={() => trashTodo(todo.id)}>
+                          <Image src="Trash.png" />
+                        </button>
                       </HStack>
                     </Td>
                   </Tr>
@@ -248,4 +403,4 @@ const pagenation = {
   color: 'blackAlpha.800',
 };
 
-export default top;
+export default Top;
