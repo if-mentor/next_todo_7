@@ -77,7 +77,7 @@ const Detail = () => {
 			(snapshot) => {
 				const userComments: CommentUser[] = snapshot.docs.map((doc) => ({
 					...doc.data(),
-					id: doc.data().id,
+					id: doc.id,
 					comment: doc.data().comment,
 					username: doc.data().username,
 					timestamp: doc.data().timestamp,
