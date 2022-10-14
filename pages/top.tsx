@@ -355,7 +355,7 @@ const Top: React.FC = () => {
                     <Td>
                       <HStack spacing="16px" justify="center">
                         {/* TODO:対象TODOの編集画面に遷移できるようにする */}
-                        <button onClick={() => router.push('/Edit')}>
+                        <button onClick={() => router.push('/edit')}>
                           <Image src="Edit.png" />
                         </button>
                         <button onClick={() => trashTodo(todo.id)}>
