@@ -94,6 +94,7 @@ const Detail = () => {
 		const commentToSend = comment;
 		const commentedUserName = commentUserName;
 		setComment("");
+		setCommentUserName("");
 		await addDoc(collection(db, "todos", "rvMETyCjqUG5Jk5v3mYm", "comments"), {
 			comment: commentToSend,
 			username: commentedUserName,
