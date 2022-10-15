@@ -6,7 +6,7 @@ const loginPage = () => {
   return (
     <>
       <Header />
-      <Center w="100vw" h="calc(100vh - 50px)">
+      <Center w="100vw" pt="100px">
         <Container
           bgColor="green.100"
           px={[4, 12, 20]}
