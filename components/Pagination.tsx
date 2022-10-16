@@ -26,7 +26,7 @@ const Pagination = ({items, pageSize, currentPage, onPageChange}) => {
     <HStack justify="center" align="center">
       <Box sx={pagination} style={1 === currentPage ? {cursor:"default" }:{cursor:"pointer" }} onClick={() => prevpage()} bgColor={1 === currentPage ? "blackAlpha.500" : "white"}>＜</Box>
       {pages.map(page => 
-        <Box sx={pagination} key={page} className={page === currentPage ? "page-item active" : "page-item"} bgColor={page === currentPage ? "blackAlpha.500" : "white"} color={page === currentPage ? "FFFFFF" : "blackAlpha.500"} style={{ cursor:"pointer" }} onClick={() => onPageChange(page)} className="page-link">
+        <Box sx={pagination} key={page} className={page === currentPage ? "page-item active" : "page-item"} bgColor={page === currentPage ? "blackAlpha.500" : "white"} color={page === currentPage ? "FFFFFF" : "blackAlpha.500"} style={page === currentPage ? {cursor:"default" }:{cursor:"pointer" }} onClick={() => onPageChange(page)} className="page-link">
           {page}
         </Box>
       )}
