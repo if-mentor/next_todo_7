@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Pagination from "../components/Pagination";
+import { paginate } from "./../utils/paginate";
 import {
   Box,
   Container,
@@ -71,6 +72,7 @@ const trash = () => {
   const handlePageChange = page => {
     setCurrentPage(page);
   }
+  const paginatePosts = paginate(todos, currentPage, pageSize);
 
   return (
     <>
@@ -183,7 +185,7 @@ const trash = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {todos.map((todo) => {
+              {paginatePosts.map((todo) => {
                 return (
                   <Tr key={todo.id}>
                     <Td textAlign="left" pl="10px">
