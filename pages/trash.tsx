@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -15,33 +15,28 @@ import {
   Td,
 } from '@chakra-ui/react';
 
-const trash = () => {
-  const [todos, setTodos] = useState([
+const arr = [];
+for(let num=1;num<=100;num++){
+  arr.push(
     {
-      id: 1,
-      task: 'testttttttttttt',
-      status: 'DONE',
-      priority: 'High',
-      create_date: '2020-11-8 18:55',
-      update_date: '2020-11-8 18:55',
-    },
-    {
-      id: 2,
-      task: 'test2',
-      status: 'DOING',
-      priority: 'Low',
-      create_date: '2020-11-8 18:55',
-      update_date: '2020-11-8 18:55',
-    },
-    {
-      id: 3,
-      task: 'test3',
+      id: num,
+      task: 'test'+String(num),
       status: 'NOT STARTED',
       priority: 'High',
       create_date: '2020-11-8 18:55',
       update_date: '2020-11-8 18:55',
-    },
-  ]);
+    })
+}
+
+const trash = () => {
+  const [todos, setTodos] = useState([]);
+  
+  useEffect(()=>{
+    const getPosts = () =>{
+      setTodos(arr);
+    }
+    getPosts();
+  },[])
 
   return (
     <>
