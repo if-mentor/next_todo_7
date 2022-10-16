@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Pagination from "../components/Pagination";
 import {
   Box,
   Container,
@@ -15,8 +16,34 @@ import {
   Td,
 } from '@chakra-ui/react';
 
-const arr = [];
-for(let num=1;num<=100;num++){
+// テストデータ --------------------------
+const arr = [
+  {
+    id: 1,
+    task: 'testttttttttttt',
+    status: 'DONE',
+    priority: 'High',
+    create_date: '2020-11-8 18:55',
+    update_date: '2020-11-8 18:55'
+  },
+  {
+    id: 2,
+    task: 'test2',
+    status: 'DOING',
+    priority: 'Low',
+    create_date: '2020-11-8 18:55',
+    update_date: '2020-11-8 18:55',
+  },
+  {
+    id: 3,
+    task: 'test3',
+    status: 'NOT STARTED',
+    priority: 'High',
+    create_date: '2020-11-8 18:55',
+    update_date: '2020-11-8 18:55',
+  }
+];
+for(let num=4;num<=100;num++){
   arr.push(
     {
       id: num,
@@ -27,9 +54,12 @@ for(let num=1;num<=100;num++){
       update_date: '2020-11-8 18:55',
     })
 }
+// -------------------------------------
 
 const trash = () => {
   const [todos, setTodos] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   
   useEffect(()=>{
     const getPosts = () =>{
@@ -37,6 +67,10 @@ const trash = () => {
     }
     getPosts();
   },[])
+
+  const handlePageChange = page => {
+    setCurrentPage(page);
+  }
 
   return (
     <>
@@ -223,15 +257,7 @@ const trash = () => {
             </Tbody>
           </Table>
         </TableContainer>
-        <HStack justify="center" align="center">
-          <Box sx={pagenation}>＜</Box>
-          <Box sx={pagenation}>1</Box>
-          <Box sx={pagenation}>2</Box>
-          <Box sx={pagenation}>...</Box>
-          <Box sx={pagenation}>5</Box>
-          <Box sx={pagenation}>6</Box>
-          <Box sx={pagenation}>＞</Box>
-        </HStack>
+        <Pagination items={todos.length} currentPage={currentPage} pageSize={pageSize} onPageChange={handlePageChange}/>
       </Container>
     </>
   );
