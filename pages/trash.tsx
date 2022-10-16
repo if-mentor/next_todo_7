@@ -60,7 +60,7 @@ for(let num=4;num<=100;num++){
 const trash = () => {
   const [todos, setTodos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 6;
   
   useEffect(()=>{
     const getPosts = () =>{
@@ -265,24 +265,5 @@ const trash = () => {
   );
 };
 
-const filterBox = {
-  w: '100%',
-  minW: '120px',
-};
-const filterTitle = {
-  fontWeight: '700',
-  fontSize: '18px',
-  lineHeight: '22px',
-};
-const pagenation = {
-  w: '40px',
-  h: '40px',
-  lineHeight: '40px',
-  textAlign: 'center',
-  borderRadius: '10px',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  fontSize: '18px',
-  color: 'blackAlpha.800',
-};
 
 export default trash;

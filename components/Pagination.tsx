@@ -1,33 +1,36 @@
 import _ from 'lodash';
 import {
   Box,
-  Container,
-  Flex,
   HStack,
-  Button,
-  Text,
-  TableContainer,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
 } from '@chakra-ui/react';
 
 const Pagination = ({items, pageSize, currentPage, onPageChange}) => {
   const pageCount = items / pageSize;
   if(Math.ceil(pageCount) === 1) return null
   const pages = _.range(1, pageCount + 1);
+  const prevpage = () => {
+    if (1 === currentPage) {
+      return null;
+    }else{
+      return onPageChange(currentPage-1);
+    }
+  };
+  const nextpage = () => {
+    if (Math.ceil(pageCount) === currentPage) {
+      return null;
+    }else{
+      return onPageChange(currentPage+1);
+    }
+  };
   return(
     <HStack justify="center" align="center">
-      <Box sx={pagination} style={{ cursor:"pointer" }} onClick={() => onPageChange(currentPage-1)}>＜</Box>
+      <Box sx={pagination} style={1 === currentPage ? {cursor:"default" }:{cursor:"pointer" }} onClick={() => prevpage()} bgColor={1 === currentPage ? "blackAlpha.500" : "white"}>＜</Box>
       {pages.map(page => 
-        <Box sx={pagination} key={page} className={page === currentPage ? "page-item active" : "page-item"} style={{ cursor:"pointer" }} onClick={() => onPageChange(page)} className="page-link">
+        <Box sx={pagination} key={page} className={page === currentPage ? "page-item active" : "page-item"} bgColor={page === currentPage ? "blackAlpha.500" : "white"} color={page === currentPage ? "FFFFFF" : "blackAlpha.500"} style={{ cursor:"pointer" }} onClick={() => onPageChange(page)} className="page-link">
           {page}
         </Box>
       )}
-      <Box sx={pagination} style={{ cursor:"pointer" }} onClick={() => onPageChange(currentPage+1)}>＞</Box>
+      <Box sx={pagination} style={Math.ceil(pageCount) === currentPage ? {cursor:"default" }:{cursor:"pointer" }} onClick={() => nextpage()} bgColor={Math.ceil(pageCount) === currentPage ? "blackAlpha.500" : "white"}>＞</Box>
     </HStack>);
 }
 
