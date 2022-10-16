@@ -1,10 +1,10 @@
 import { atom, RecoilState } from "recoil";
 
 type User = {
-	uid?: string;
+	uid: string;
 };
 
 export const userState: RecoilState<User> = atom({
 	key: "userState",
-	default: {},
+	default: { uid: "" },
 });
