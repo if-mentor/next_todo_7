@@ -126,52 +126,55 @@ const Top: React.FC = () => {
     });
   };
 
-  const trashTodo: (id: string) => void = async(id) => {
-        await updateDoc(doc(db, "todos", id), {
-          category: "trash",
-        });
-        //trashしたtodoを削除したtodoリスト作成
-        const trashedTodos: Todo[] = todos.filter((todo) => {
-          return todo.id !== id;
-        });
-        setTodos(trashedTodos);
+  const trashTodo: (id: string) => void = async (id) => {
+    await updateDoc(doc(db, "todos", id), {
+      category: "trash",
+    });
+    //trashしたtodoを削除したtodoリスト作成
+    const trashedTodos: Todo[] = todos.filter((todo) => {
+      return todo.id !== id;
+    });
+    setTodos(trashedTodos);
   };
 
-  const handleChangePriority:(e:React.ChangeEvent<HTMLSelectElement>, id: string)=>void = (e,id)=>{
-      updateDoc(doc(db, "todos", id), {
-        priority: e.target.value,
-        update: serverTimestamp(),
-      });
-  }
+  const handleChangePriority: (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    id: string
+  ) => void = (e, id) => {
+    updateDoc(doc(db, "todos", id), {
+      priority: e.target.value,
+      update: serverTimestamp(),
+    });
+  };
 
   const getTodos: () => void = async () => {
-      const querySnapshot = await getDocs(
-        query(
-          collection(db, "todos"),
-          where("category", "==", "top"),
-          // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
-          orderBy("create", "desc")
-        )
-      );
-      const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        task: doc.data().task,
-        status: doc.data().status,
-        priority: doc.data().priority,
-        create_date: doc.data().create,
-        update_date: doc.data().update,
-      }));
-      setTodos(initialTodos);
-    }
-    
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, "todos"),
+        where("category", "==", "top"),
+        // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
+        orderBy("create", "desc")
+      )
+    );
+    const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      task: doc.data().task,
+      status: doc.data().status,
+      priority: doc.data().priority,
+      create_date: doc.data().create,
+      update_date: doc.data().update,
+    }));
+    setTodos(initialTodos);
+  };
+
   React.useEffect(() => {
     if (!uid) {
       router.push("/login");
     } else {
-        getTodos();
+      getTodos();
     }
   }, []);
-  
+
   return (
     <>
       <Header />
@@ -348,7 +351,10 @@ const Top: React.FC = () => {
                       </Box>
                     </Td>
                     <Td textAlign="center">
-                      <Select defaultValue={todo.priority} onChange={(e) =>handleChangePriority(e, todo.id)}>
+                      <Select
+                        defaultValue={todo.priority}
+                        onChange={(e) => handleChangePriority(e, todo.id)}
+                      >
                         {priorities.map((priority) => (
                           <option key={priority} value={priority}>
                             {priority}
@@ -360,7 +366,7 @@ const Top: React.FC = () => {
                       {parseTimestampToDate(todo.create_date, "-")}
                     </Td>
                     <Td fontSize="14px" textAlign="center">
-                      {parseTimestampToDate(todo.update_date, "-")||"-"}
+                      {parseTimestampToDate(todo.update_date, "-") || "-"}
                     </Td>
                     <Td>
                       <HStack spacing="16px" justify="center">
