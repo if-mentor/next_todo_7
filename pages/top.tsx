@@ -22,7 +22,8 @@ import {
 import { useRouter } from "next/router";
 import {
   collection,
-  getDocs,
+  Docs,
+  onSnapshot,
   orderBy,
   query,
   Timestamp,
@@ -147,33 +148,30 @@ const Top: React.FC = () => {
     });
   };
 
-  const getTodos: () => void = async () => {
-    const querySnapshot = await getDocs(
-      query(
-        collection(db, "todos"),
-        where("category", "==", "top"),
-        // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
-        orderBy("create", "desc")
-      )
+  React.useEffect(() => {
+    const getTodos = query(
+      collection(db, "todos"),
+      where("category", "==", "top"),
+      // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
+      orderBy("create", "desc")
     );
-    const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      task: doc.data().task,
-      status: doc.data().status,
-      priority: doc.data().priority,
-      create_date: doc.data().create,
-      update_date: doc.data().update,
-    }));
-    setTodos(initialTodos);
-  };
+    const unsubscribe = onSnapshot(getTodos, (querySnapshot) => {
+      const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        task: doc.data().task,
+        status: doc.data().status,
+        priority: doc.data().priority,
+        create_date: doc.data().create,
+        update_date: doc.data().update,
+      }));
+      setTodos(initialTodos)
+    });
+    return () => unsubscribe();
+  }, []);
 
   React.useEffect(() => {
-    if (!uid) {
-      router.push("/login");
-    } else {
-      getTodos();
-    }
-  }, []);
+    !uid && router.push("/login");
+  },[])
 
   return (
     <>

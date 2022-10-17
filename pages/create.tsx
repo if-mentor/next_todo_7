@@ -75,8 +75,7 @@ const create: React.FC = () => {
       });
     };
     firestoreSubmit();
-    // 少し時間をおかないとcreateのタイムスタンプが生成されていないようなので追加しました
-    setTimeout(()=>{router.push("/top")},1000) 
+    router.push("/top") 
   };
 
   return (
