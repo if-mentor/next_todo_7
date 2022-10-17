@@ -22,11 +22,13 @@ import { Header } from "../components/Header";
 import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useRecoilValue } from "recoil";
+import { userState } from "../Atoms/userAtom";
 
 type FormValues = {
   title: string;
   detail: string | null;
-  priority: string;
+  priority:  'High' | 'Middle' | 'Low';
 };
 // top:TOPページ、draft:DRAFTページ、trash:trashページにそれぞれ表示
 type Category = "top" | "draft" | "trash";
@@ -40,6 +42,7 @@ const create: React.FC = () => {
   } = useForm<FormValues>();
   // const [category, setCategory] = React.useState<Category>("top");
   const router = useRouter();
+  const uid = useRecoilValue(userState).uid;
 
   // validationは適当です。適宜変更してください。
   const validationRules = {
@@ -61,18 +64,19 @@ const create: React.FC = () => {
   const onSubmit: SubmitHandler<FormValues> = (values: FormValues) => {
     const firestoreSubmit = async () => {
       await addDoc(collection(db, "todos"), {
-        title: values.title,
+        task: values.title,
         detail: values.detail,
         status: "NOT STARTED",
-        priority: values.priority || 2, // 一度もpriorityを変更していない場合値が入れないため調節
+        priority: values.priority || 'Middle', // 一度もpriorityを変更していない場合値が入れないため調節
         create: serverTimestamp(),
         update: null,
-        author: "uid", // TODO: 今後uidをstateから取得するように変更？
+        author: uid, 
         category: "top",
       });
     };
     firestoreSubmit();
-    router.push("/top");
+    // 少し時間をおかないとcreateのタイムスタンプが生成されていないようなので追加しました
+    setTimeout(()=>{router.push("/top")},1000) 
   };
 
   return (
@@ -136,12 +140,12 @@ const create: React.FC = () => {
                     <RadioGroup
                       onChange={onChange}
                       value={value}
-                      defaultValue="2"
+                      defaultValue="Middle"
                     >
                       <Stack direction="row">
-                        <Radio value="1">High</Radio>
-                        <Radio value="2">Middle</Radio>
-                        <Radio value="3">Low</Radio>
+                        <Radio value="High">High</Radio>
+                        <Radio value="Middle">Middle</Radio>
+                        <Radio value="Low">Low</Radio>
                       </Stack>
                     </RadioGroup>
                   )}
