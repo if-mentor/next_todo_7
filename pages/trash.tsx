@@ -18,43 +18,7 @@ import {
 } from '@chakra-ui/react';
 
 // テストデータ --------------------------
-const arr = [
-  {
-    id: 1,
-    task: 'testttttttttttt',
-    status: 'DONE',
-    priority: 'High',
-    create_date: '2020-11-8 18:55',
-    update_date: '2020-11-8 18:55'
-  },
-  {
-    id: 2,
-    task: 'test2',
-    status: 'DOING',
-    priority: 'Low',
-    create_date: '2020-11-8 18:55',
-    update_date: '2020-11-8 18:55',
-  },
-  {
-    id: 3,
-    task: 'test3',
-    status: 'NOT STARTED',
-    priority: 'High',
-    create_date: '2020-11-8 18:55',
-    update_date: '2020-11-8 18:55',
-  }
-];
-for(let num=4;num<=100;num++){
-  arr.push(
-    {
-      id: num,
-      task: 'test'+String(num),
-      status: 'NOT STARTED',
-      priority: 'High',
-      create_date: '2020-11-8 18:55',
-      update_date: '2020-11-8 18:55',
-    })
-}
+
 // -------------------------------------
 
 const trash = () => {
@@ -64,12 +28,24 @@ const trash = () => {
   
   useEffect(()=>{
     const getPosts = () =>{
+      const arr: any = [];
+    for(let num=1;num<=100;num++){
+      arr.push(
+        {
+          id: num,
+          task: 'test' + String(num),
+          status: 'NOT STARTED',
+          priority: 'High',
+          create_date: '2020-11-8 18:55',
+          update_date: '2020-11-8 18:55',
+        })
+    }
       setTodos(arr);
     }
     getPosts();
   },[])
 
-  const handlePageChange = page => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
   }
   const paginatePosts = paginate(todos, currentPage, pageSize);
