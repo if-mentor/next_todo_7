@@ -4,7 +4,7 @@ import {
   HStack,
 } from '@chakra-ui/react';
 
-const Pagination = ({items, pageSize, currentPage, onPageChange}) => {
+const Pagination = ({items, pageSize, currentPage, onPageChange}: any) => {
   const pageCount = items / pageSize;
   if(Math.ceil(pageCount) === 1) return null
   const pages = _.range(1, pageCount + 1);
