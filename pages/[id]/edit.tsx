@@ -1,5 +1,4 @@
 import * as React from "react";
-// import { usePromise } from 'react-use';
 import {
   Button,
   Container,
@@ -31,27 +30,33 @@ const Edit = () => {
   const [todos, setTodos] = React.useState<QueryDocumentSnapshot[]>();
   const router = useRouter();
 
-  React.useEffect(() => {
-
-    
+  const getFirestoreData = async () => {
     const q = query(collection(db, 'todos'));
-    const querySnapshot = getDocs(q);
-    console.log(querySnapshot);
+    const querySnapshot = await getDocs(q);
+    setTodos(querySnapshot.docs);
+  }
+  // getFirestoreData()
 
-    // usePromise()
-
-    // onSnapshot(q, (snapShot) => {
+  // onSnapshot(q, (snapShot) => {
     //   setTodos(snapShot.docs);
     // });
-  }, [])
 
   // React.useEffect(() => {
-  //   console.log(todos);
-  // }, [todos])
+  //   const q = query(collection(db, 'todos'));
+  //   const querySnapshot = getDocs(q)
+  //   querySnapshot.then((snapShot) => {
+  //     setTodos(snapShot.docs);
+  //   })
+  // }, [])
 
-  // React.useEffect(() => {
-  //   console.log(todo);
-  // }, [todo])
+
+  React.useEffect(() => {
+    console.log(todos);
+  }, [todos])
+
+  React.useEffect(() => {
+    console.log(todo);
+  }, [todo])
 
   return (
     <>
