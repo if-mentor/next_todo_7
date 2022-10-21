@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+// import { usePromise } from 'react-use';
 import {
   Button,
   Container,
@@ -12,14 +13,48 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import Head from "next/head";
+import { useRouter } from "next/router";
+import { db } from "../../firebase/firebase";
+import { collection, DocumentData, getDocs, onSnapshot, query, QueryDocumentSnapshot, QuerySnapshot, Timestamp } from "firebase/firestore";
+
+type Todo = {
+  id: string;
+  task: string;
+  status: "NOT STARTED" | "DOING" | "DONE";
+  priority: "High" | "Middle" | "Low";
+  create_date: Timestamp;
+  update_date: Timestamp | null;
+};
 
 const Edit = () => {
+  const [todo, setTodo] = React.useState<QueryDocumentSnapshot>();
+  const [todos, setTodos] = React.useState<QueryDocumentSnapshot[]>();
+  const router = useRouter();
+
+  React.useEffect(() => {
+
+    
+    const q = query(collection(db, 'todos'));
+    const querySnapshot = getDocs(q);
+    console.log(querySnapshot);
+
+    // usePromise()
+
+    // onSnapshot(q, (snapShot) => {
+    //   setTodos(snapShot.docs);
+    // });
+  }, [])
+
+  // React.useEffect(() => {
+  //   console.log(todos);
+  // }, [todos])
+
+  // React.useEffect(() => {
+  //   console.log(todo);
+  // }, [todo])
+
   return (
     <>
-      <Head>
-        <title>Edit</title>
-      </Head>
       <Container mt="20px" p="0" w="85%" maxW="1080px">
         <VStack>
           <Flex w="100%">
@@ -43,6 +78,7 @@ const Edit = () => {
               borderWidth="1px"
               borderColor="blackAlpha.800"
               borderRadius="50px"
+              onClick={() => router.push('/top')}
             >
               Back
             </Button>
@@ -71,6 +107,7 @@ const Edit = () => {
                 borderColor="blackAlpha.800"
                 borderRadius="10px"
                 type="Text"
+                value={todo?.data().task}
               />
               <FormErrorMessage></FormErrorMessage>
             </FormControl>
@@ -94,6 +131,7 @@ const Edit = () => {
                 borderWidth="1px"
                 borderColor="blackAlpha.800"
                 borderRadius="10px"
+                value={todo?.data().detail}
               />
             </FormControl>
 
@@ -163,4 +201,4 @@ const Edit = () => {
   );
 };
 
-export default Edit
+export default Edit;
