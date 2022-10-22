@@ -22,7 +22,6 @@ import {
 import { useRouter } from "next/router";
 import {
   collection,
-  Docs,
   onSnapshot,
   orderBy,
   query,
@@ -36,6 +35,7 @@ import { db } from "../firebase/firebase";
 import { useRecoilValue } from "recoil";
 import { userState } from "../Atoms/userAtom";
 import { Header } from "../components/Header";
+import { useAppContext } from "../context/appContext";
 import parseTimestampToDate from "../utils/parseTimestampToDate";
 
 type Todo = {
@@ -59,11 +59,17 @@ const Top: React.FC = () => {
   const statuses = ["NOT STARTED", "DOING", "DONE"];
   const priorities = ["High", "Middle", "Low"];
   const uid = useRecoilValue(userState).uid;
+  const { user } = useAppContext();
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({
     task: "",
     status: "",
     priority: "",
   });
+
+  React.useEffect(() => {
+    !!user || router.push("/login");
+  }, [user]);
+
 
   const filteredTodos: Todo[] = useMemo(() => {
     //Memo:...todosでやると配列のコピーになり、オブジェクトは参照になる
@@ -168,10 +174,6 @@ const Top: React.FC = () => {
     });
     return () => unsubscribe();
   }, []);
-
-  React.useEffect(() => {
-    !uid && router.push("/login");
-  },[])
 
   return (
     <>

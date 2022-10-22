@@ -22,13 +22,12 @@ import { Header } from "../components/Header";
 import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
+import { useAppContext } from "../context/appContext";
 
 type FormValues = {
   title: string;
   detail: string | null;
-  priority:  'High' | 'Middle' | 'Low';
+  priority: "High" | "Middle" | "Low";
 };
 // top:TOPページ、draft:DRAFTページ、trash:trashページにそれぞれ表示
 type Category = "top" | "draft" | "trash";
@@ -42,7 +41,11 @@ const create: React.FC = () => {
   } = useForm<FormValues>();
   // const [category, setCategory] = React.useState<Category>("top");
   const router = useRouter();
-  const uid = useRecoilValue(userState).uid;
+  const { user } = useAppContext();
+
+  React.useEffect(() => {
+    !!user || router.push("/login");
+  }, [user]);
 
   // validationは適当です。適宜変更してください。
   const validationRules = {
@@ -67,15 +70,15 @@ const create: React.FC = () => {
         task: values.title,
         detail: values.detail,
         status: "NOT STARTED",
-        priority: values.priority || 'Middle', // 一度もpriorityを変更していない場合値が入れないため調節
+        priority: values.priority || "Middle", // 一度もpriorityを変更していない場合値が入れないため調節
         create: serverTimestamp(),
         update: null,
-        author: uid, 
+        author: user.displayName,
         category: "top",
       });
     };
     firestoreSubmit();
-    router.push("/top") 
+    router.push("/top");
   };
 
   return (
