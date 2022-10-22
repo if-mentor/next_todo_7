@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Container,
@@ -12,51 +12,62 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import { doc, DocumentData, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
-import { collection, DocumentData, getDocs, onSnapshot, query, QueryDocumentSnapshot, QuerySnapshot, Timestamp } from "firebase/firestore";
-
-type Todo = {
-  id: string;
-  task: string;
-  status: "NOT STARTED" | "DOING" | "DONE";
-  priority: "High" | "Middle" | "Low";
-  create_date: Timestamp;
-  update_date: Timestamp | null;
-};
+import { useRouter } from "next/router";
+import parseTimestampToDate from "../../utils/parseTimestampToDate";
 
 const Edit = () => {
-  const [todo, setTodo] = React.useState<QueryDocumentSnapshot>();
-  const [todos, setTodos] = React.useState<QueryDocumentSnapshot[]>();
+  const [editTodoId, setEditTodoId] = useState<string>('');
+
+  const [date, setDate] = useState<Date>();
+  // オブジェクトに値をいれておかないと controle と uncontrole で制御するのかしないのかわからないため警告が出る、一時的な回避
+  const [editTodo, setEditTodo] = useState<DocumentData>({ task: '' });
   const router = useRouter();
+  const { isReady } = useRouter();
 
-  const getFirestoreData = async () => {
-    const q = query(collection(db, 'todos'));
-    const querySnapshot = await getDocs(q);
-    setTodos(querySnapshot.docs);
+  useEffect(() => {
+    (async () => {
+      if (isReady) {
+        const docRef = doc(db, "todos", `${router.query.id}`);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setEditTodoId(docSnap.id);
+          setDate(docSnap.data().create)
+          setEditTodo(docSnap.data());
+        } else {
+          // データを取得できなかった時にアラートなどをだす
+          console.log("No such document!");
+        }
+      } else {
+        // データを取得できなかった時にアラートなどをだす
+        console.log('No such')
+      }
+    })()
+  }, [isReady]);
+
+  const onClickEditTodoSave = async () => {
+    const ref = doc(db, "todos", editTodoId);
+    await updateDoc(ref, {
+      task: editTodo.task,
+      detail: editTodo.detail,
+      update: serverTimestamp(),
+    });
+    router.push('/top');
   }
-  // getFirestoreData()
 
-  // onSnapshot(q, (snapShot) => {
-    //   setTodos(snapShot.docs);
-    // });
+  useEffect(() => {
+    console.log(editTodoId);
+  }, [editTodoId])
 
-  // React.useEffect(() => {
-  //   const q = query(collection(db, 'todos'));
-  //   const querySnapshot = getDocs(q)
-  //   querySnapshot.then((snapShot) => {
-  //     setTodos(snapShot.docs);
-  //   })
-  // }, [])
+  useEffect(() => {
+    console.log(date);
+  }, [date])
 
-
-  React.useEffect(() => {
-    console.log(todos);
-  }, [todos])
-
-  React.useEffect(() => {
-    console.log(todo);
-  }, [todo])
+  useEffect(() => {
+    console.log(editTodo);
+  }, [editTodo])
 
   return (
     <>
@@ -96,12 +107,12 @@ const Edit = () => {
                 fontWeight="bold"
                 lineHeight="24px"
                 color="blackAlpha.800"
-                htmlFor="title"
+                htmlFor="task"
               >
                 TITLE
               </FormLabel>
               <Input
-                id="title"
+                id="task"
                 h="72px"
                 mt="4px"
                 p="8px 16px"
@@ -112,7 +123,8 @@ const Edit = () => {
                 borderColor="blackAlpha.800"
                 borderRadius="10px"
                 type="Text"
-                value={todo?.data().task}
+                value={editTodo?.task}
+                onChange={(e) => setEditTodo({ ...editTodo, task: e.target.value })}
               />
               <FormErrorMessage></FormErrorMessage>
             </FormControl>
@@ -136,7 +148,8 @@ const Edit = () => {
                 borderWidth="1px"
                 borderColor="blackAlpha.800"
                 borderRadius="10px"
-                value={todo?.data().detail}
+                value={editTodo?.detail}
+                onChange={(e) => setEditTodo({ ...editTodo, detail: e.target.value })}
               />
             </FormControl>
 
@@ -158,7 +171,9 @@ const Edit = () => {
                   fontWeight="bold"
                   lineHeight="20px"
                   color="blackAlpha.800"
-                >2022-9-21 9:50</Text>
+                >
+                  {parseTimestampToDate(editTodo.create, "-")}
+                </Text>
               </Flex>
 
               <Flex ml="27px" direction="column">
@@ -169,7 +184,6 @@ const Edit = () => {
                   color="blackAlpha.800"
                 >
                   Update
-                  
                 </Text>
                 <Text
                   mt="4px"
@@ -177,13 +191,15 @@ const Edit = () => {
                   fontWeight="bold"
                   lineHeight="20px"
                   color="blackAlpha.800"
-                >2022-9-21 9:51</Text>
+                >
+                  {parseTimestampToDate(editTodo.update, "-")}
+                </Text>
               </Flex>
             </Flex>
 
             <Flex w="100%" flexDirection="row-reverse">
               <Button
-                type="submit"
+                type="button"
                 w="112px"
                 h="40px"
                 m="10px 2px 0 8px"
@@ -195,6 +211,7 @@ const Edit = () => {
                 borderWidth="1px"
                 borderColor="blackAlpha.800"
                 borderRadius="50px"
+                onClick={() => onClickEditTodoSave()}
               >
                 UPDATE
               </Button>
