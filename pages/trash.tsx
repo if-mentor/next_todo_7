@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   Box,
   Container,
@@ -14,38 +15,94 @@ import {
   Th,
   Td,
 } from '@chakra-ui/react';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { useRecoilValue } from 'recoil';
+import { userState } from '../Atoms/userAtom';
+import { Todo } from './top';
+import parseTimestampToDate from '../utils/parseTimestampToDate';
 
-const trash = () => {
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      task: 'testttttttttttt',
-      status: 'DONE',
-      priority: 'High',
-      create_date: '2020-11-8 18:55',
-      update_date: '2020-11-8 18:55',
-    },
-    {
-      id: 2,
-      task: 'test2',
-      status: 'DOING',
-      priority: 'Low',
-      create_date: '2020-11-8 18:55',
-      update_date: '2020-11-8 18:55',
-    },
-    {
-      id: 3,
-      task: 'test3',
-      status: 'NOT STARTED',
-      priority: 'High',
-      create_date: '2020-11-8 18:55',
-      update_date: '2020-11-8 18:55',
-    },
-  ]);
+const Trash = () => {
+  const router = useRouter();
+  const uid = useRecoilValue(userState).uid;
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  //ユーザー確認
+  React.useEffect(() => {
+    if (!uid) {
+      router.push('/login');
+    } else {
+      getTodos();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  //DBからTrashデータ取得
+  const getTodos: () => void = async () => {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, 'todos'),
+        where('category', '==', 'trash'),
+        where('author', '==', uid),
+        orderBy('create', 'desc')
+      )
+    );
+    const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      task: doc.data().task,
+      status: doc.data().status,
+      priority: doc.data().priority,
+      create_date: doc.data().create,
+      update_date: doc.data().update,
+    }));
+    setTodos(initialTodos);
+  };
+
+  //リストア
+  const handleRestoreData: (
+    e: React.FormEvent<HTMLButtonElement>,
+    id: string
+  ) => void = async (e, id) => {
+    await updateDoc(doc(db, 'todos', id), {
+      category: 'top',
+    });
+    //restoreしたtodoを削除したtodoリスト作成
+    const restoredTodos: Todo[] = todos.filter((todo) => {
+      return todo.id !== id;
+    });
+    setTodos(restoredTodos);
+  };
+
+  //削除
+  const handleDeleteData: (
+    e: React.FormEvent<HTMLButtonElement>,
+    id: string
+  ) => void = async (e, id) => {
+    console.log('hello');
+    await deleteDoc(doc(db, 'todos', id))
+      .then(() => alert('データが削除されました'))
+      .catch((err) => {
+        alert(err.message);
+      });
+    //deleteしたtodoを削除したtodoリスト作成
+    const deletedTodos: Todo[] = todos.filter((todo) => {
+      return todo.id !== id;
+    });
+    setTodos(deletedTodos);
+  };
 
   return (
     <>
-      <Container p="20px 100px 0" w="100%" maxW="auto">
+      <Container p="110px 100px 0" w="100%" maxW="1080px">
         <Flex justify="space-between">
           <Text
             fontSize="28px"
@@ -92,6 +149,7 @@ const trash = () => {
               fontSize="18px"
               fontWeight="bold"
               ml="24px"
+              onClick={() => router.push('/top')}
             >
               Back
             </Button>
@@ -165,9 +223,20 @@ const trash = () => {
                         w="120px"
                         h="40px"
                         lineHeight="40px"
+                        textAlign="center"
                         borderRadius="50px"
-                        bg="green.600"
-                        color="#F0FFF4"
+                        bg={
+                          todo.status === 'DOING'
+                            ? 'green.600'
+                            : todo.status === 'DONE'
+                            ? 'green.300'
+                            : 'green.50'
+                        }
+                        color={
+                          todo.status === 'DOING'
+                            ? 'green.50'
+                            : 'blackAlpha.800'
+                        }
                         fontWeight="bold"
                       >
                         <Text>{todo.status}</Text>
@@ -190,7 +259,7 @@ const trash = () => {
                       {todo.priority}
                     </Td>
                     <Td fontSize="14px" textAlign="center">
-                      {todo.create_date}
+                      {parseTimestampToDate(todo.create_date, '-')}
                     </Td>
                     <Td>
                       <HStack spacing="16px" justify="center">
@@ -204,6 +273,7 @@ const trash = () => {
                           fontSize="18px"
                           fontWeight="bold"
                           p="0"
+                          onClick={(e) => handleDeleteData(e, todo.id)}
                         >
                           Delete
                         </Button>
@@ -217,6 +287,7 @@ const trash = () => {
                           fontSize="18px"
                           fontWeight="bold"
                           p="0"
+                          onClick={(e) => handleRestoreData(e, todo.id)}
                         >
                           Restore
                         </Button>
@@ -262,4 +333,4 @@ const pagenation = {
   color: 'blackAlpha.800',
 };
 
-export default trash;
+export default Trash;

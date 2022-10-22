@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useState } from "react";
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -18,8 +18,8 @@ import {
   Tr,
   Th,
   Td,
-} from "@chakra-ui/react";
-import { useRouter } from "next/router";
+} from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import {
   collection,
   getDocs,
@@ -30,65 +30,65 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
-} from "firebase/firestore";
-import { db } from "../firebase/firebase";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
-import { Header } from "../components/Header";
-import parseTimestampToDate from "../utils/parseTimestampToDate";
+} from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { useRecoilValue } from 'recoil';
+import { userState } from '../Atoms/userAtom';
+import { Header } from '../components/Header';
+import parseTimestampToDate from '../utils/parseTimestampToDate';
 
-type Todo = {
+export type Todo = {
   id: string;
   task: string;
-  status: "NOT STARTED" | "DOING" | "DONE";
-  priority: "High" | "Middle" | "Low";
+  status: 'NOT STARTED' | 'DOING' | 'DONE';
+  priority: 'High' | 'Middle' | 'Low';
   create_date: Timestamp;
   update_date: Timestamp | null;
 };
 
 type FilterQuery = {
   task: string;
-  status: "" | "NOT STARTED" | "DOING" | "DONE";
-  priority: "" | "High" | "Middle" | "Low";
+  status: '' | 'NOT STARTED' | 'DOING' | 'DONE';
+  priority: '' | 'High' | 'Middle' | 'Low';
 };
 
 const Top: React.FC = () => {
   const router = useRouter();
   const [todos, setTodos] = useState<Todo[]>([]);
-  const statuses = ["NOT STARTED", "DOING", "DONE"];
-  const priorities = ["High", "Middle", "Low"];
+  const statuses = ['NOT STARTED', 'DOING', 'DONE'];
+  const priorities = ['High', 'Middle', 'Low'];
   const uid = useRecoilValue(userState).uid;
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({
-    task: "",
-    status: "",
-    priority: "",
+    task: '',
+    status: '',
+    priority: '',
   });
 
   const filteredTodos: Todo[] = useMemo(() => {
     //Memo:...todosでやると配列のコピーになり、オブジェクトは参照になる
     let cloneTodos: Todo[] = todos.map((todo) => ({ ...todo }));
     const tmpTodos = cloneTodos.filter((row) => {
-      switch (Object.values(filterQuery).filter((n) => n === "").length) {
+      switch (Object.values(filterQuery).filter((n) => n === '').length) {
         case 3:
           return todos;
         case 2:
           if (
-            (filterQuery.priority !== "" &&
+            (filterQuery.priority !== '' &&
               filterQuery.priority === row.priority) ||
-            (filterQuery.status !== "" && filterQuery.status === row.status) ||
-            (filterQuery.task !== "" && row.task.includes(filterQuery.task))
+            (filterQuery.status !== '' && filterQuery.status === row.status) ||
+            (filterQuery.task !== '' && row.task.includes(filterQuery.task))
           ) {
             return row;
           }
         case 1:
           if (
-            (filterQuery.task == "" &&
+            (filterQuery.task == '' &&
               filterQuery.status === row.status &&
               filterQuery.priority === row.priority) ||
-            (filterQuery.status == "" &&
+            (filterQuery.status == '' &&
               row.task.includes(filterQuery.task) &&
               filterQuery.priority === row.priority) ||
-            (filterQuery.priority == "" &&
+            (filterQuery.priority == '' &&
               row.task.includes(filterQuery.task) &&
               filterQuery.status === row.status)
           ) {
@@ -120,15 +120,15 @@ const Top: React.FC = () => {
 
   const filterReset: () => void = () => {
     setFilterQuery({
-      task: "",
-      status: "",
-      priority: "",
+      task: '',
+      status: '',
+      priority: '',
     });
   };
 
   const trashTodo: (id: string) => void = async (id) => {
-    await updateDoc(doc(db, "todos", id), {
-      category: "trash",
+    await updateDoc(doc(db, 'todos', id), {
+      category: 'trash',
     });
     //trashしたtodoを削除したtodoリスト作成
     const trashedTodos: Todo[] = todos.filter((todo) => {
@@ -141,7 +141,7 @@ const Top: React.FC = () => {
     e: React.ChangeEvent<HTMLSelectElement>,
     id: string
   ) => void = (e, id) => {
-    updateDoc(doc(db, "todos", id), {
+    updateDoc(doc(db, 'todos', id), {
       priority: e.target.value,
       update: serverTimestamp(),
     });
@@ -150,10 +150,10 @@ const Top: React.FC = () => {
   const getTodos: () => void = async () => {
     const querySnapshot = await getDocs(
       query(
-        collection(db, "todos"),
-        where("category", "==", "top"),
+        collection(db, 'todos'),
+        where('category', '==', 'top'),
         // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
-        orderBy("create", "desc")
+        orderBy('create', 'desc')
       )
     );
     const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
@@ -169,7 +169,7 @@ const Top: React.FC = () => {
 
   React.useEffect(() => {
     if (!uid) {
-      router.push("/login");
+      router.push('/login');
     } else {
       getTodos();
     }
@@ -244,13 +244,13 @@ const Top: React.FC = () => {
           </HStack>
           <Spacer />
           <HStack spacing="16px">
-            <button onClick={() => router.push("/trash")}>
+            <button onClick={() => router.push('/trash')}>
               <Image src="Trash Icon Button.png" />
             </button>
             {/* <button>
               <Image src="Draft Icon Button.png" />
             </button> */}
-            <button onClick={() => router.push("/create")}>
+            <button onClick={() => router.push('/create')}>
               <Image src="New Icon Button.png" _hover={{ opacity: 0.8 }} />
             </button>
           </HStack>
@@ -335,16 +335,16 @@ const Top: React.FC = () => {
                         lineHeight="40px"
                         borderRadius="50px"
                         bg={
-                          todo.status === "DOING"
-                            ? "green.600"
-                            : todo.status === "DONE"
-                            ? "green.300"
-                            : "green.50"
+                          todo.status === 'DOING'
+                            ? 'green.600'
+                            : todo.status === 'DONE'
+                            ? 'green.300'
+                            : 'green.50'
                         }
                         color={
-                          todo.status === "DOING"
-                            ? "green.50"
-                            : "blackAlpha.800"
+                          todo.status === 'DOING'
+                            ? 'green.50'
+                            : 'blackAlpha.800'
                         }
                       >
                         <Text>{todo.status}</Text>
@@ -363,15 +363,15 @@ const Top: React.FC = () => {
                       </Select>
                     </Td>
                     <Td fontSize="14px" textAlign="center">
-                      {parseTimestampToDate(todo.create_date, "-")}
+                      {parseTimestampToDate(todo.create_date, '-')}
                     </Td>
                     <Td fontSize="14px" textAlign="center">
-                      {parseTimestampToDate(todo.update_date, "-") || "-"}
+                      {parseTimestampToDate(todo.update_date, '-') || '-'}
                     </Td>
                     <Td>
                       <HStack spacing="16px" justify="center">
                         {/* TODO:対象TODOの編集画面に遷移できるようにする */}
-                        <button onClick={() => router.push("/edit")}>
+                        <button onClick={() => router.push('/edit')}>
                           <Image src="Edit.png" />
                         </button>
                         <button onClick={() => trashTodo(todo.id)}>
@@ -400,23 +400,23 @@ const Top: React.FC = () => {
 };
 
 const filterBox = {
-  w: "100%",
-  minW: "120px",
+  w: '100%',
+  minW: '120px',
 };
 const filterTitle = {
-  fontWeight: "700",
-  fontSize: "18px",
-  lineHeight: "22px",
+  fontWeight: '700',
+  fontSize: '18px',
+  lineHeight: '22px',
 };
 const pagenation = {
-  w: "40px",
-  h: "40px",
-  lineHeight: "40px",
-  textAlign: "center",
-  borderRadius: "10px",
-  border: "1px solid rgba(0, 0, 0, 0.8)",
-  fontSize: "18px",
-  color: "blackAlpha.800",
+  w: '40px',
+  h: '40px',
+  lineHeight: '40px',
+  textAlign: 'center',
+  borderRadius: '10px',
+  border: '1px solid rgba(0, 0, 0, 0.8)',
+  fontSize: '18px',
+  color: 'blackAlpha.800',
 };
 
 export default Top;
