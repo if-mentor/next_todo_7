@@ -19,8 +19,6 @@ import parseTimestampToDate from "../../utils/parseTimestampToDate";
 
 const Edit = () => {
   const [editTodoId, setEditTodoId] = useState<string>('');
-
-  const [date, setDate] = useState<Date>();
   // オブジェクトに値をいれておかないと controle と uncontrole で制御するのかしないのかわからないため警告が出る、一時的な回避
   const [editTodo, setEditTodo] = useState<DocumentData>({ task: '' });
   const router = useRouter();
@@ -31,10 +29,8 @@ const Edit = () => {
       if (isReady) {
         const docRef = doc(db, "todos", `${router.query.id}`);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
           setEditTodoId(docSnap.id);
-          setDate(docSnap.data().create)
           setEditTodo(docSnap.data());
         } else {
           // データを取得できなかった時にアラートなどをだす
@@ -56,18 +52,6 @@ const Edit = () => {
     });
     router.push('/top');
   }
-
-  useEffect(() => {
-    console.log(editTodoId);
-  }, [editTodoId])
-
-  useEffect(() => {
-    console.log(date);
-  }, [date])
-
-  useEffect(() => {
-    console.log(editTodo);
-  }, [editTodo])
 
   return (
     <>
