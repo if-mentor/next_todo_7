@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Head from "next/head";
+import { useRouter } from "next/router";
 import {
   Button,
   Container,
@@ -14,7 +16,6 @@ import {
 } from "@chakra-ui/react";
 import { doc, DocumentData, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
-import { useRouter } from "next/router";
 import parseTimestampToDate from "../../utils/parseTimestampToDate";
 
 const Edit = () => {
@@ -55,6 +56,9 @@ const Edit = () => {
 
   return (
     <>
+      <Head>
+        <title>todo team7 - Edit</title>
+      </Head>
       <Container mt="20px" p="0" w="85%" maxW="1080px">
         <VStack>
           <Flex w="100%">
