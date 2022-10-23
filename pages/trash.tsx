@@ -17,29 +17,34 @@ import {
   Td,
 } from '@chakra-ui/react';
 
-// テストデータ --------------------------
 
-// -------------------------------------
-
-const trash = () => {
-  const [todos, setTodos] = useState([]);
+const Trash = () => {
+  type Todo = {
+    id: number;
+    task: string;
+    status: 'NOT STARTED' | 'DOING' | 'DONE';
+    priority: 'High' | 'Middle' | 'Low';
+    create_date: string; //TODO:Timestampに変更予定
+    update_date: string; //TODO:Timestampに変更予定
+  };
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
   
   useEffect(()=>{
     const getPosts = () =>{
-      const arr: any = [];
-    for(let num=1;num<=100;num++){
-      arr.push(
-        {
-          id: num,
-          task: 'test' + String(num),
-          status: 'NOT STARTED',
-          priority: 'High',
-          create_date: '2020-11-8 18:55',
-          update_date: '2020-11-8 18:55',
-        })
-    }
+      const arr: Todo[] = [];
+      for(let num=1;num<=100;num++){
+        arr.push(
+          {
+            id: num,
+            task: 'test' + String(num),
+            status: 'NOT STARTED',
+            priority: 'High',
+            create_date: '2020-11-8 18:55',
+            update_date: '2020-11-8 18:55',
+          })
+      }
       setTodos(arr);
     }
     getPosts();
@@ -242,4 +247,4 @@ const trash = () => {
 };
 
 
-export default trash;
+export default Trash;

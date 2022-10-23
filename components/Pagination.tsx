@@ -3,8 +3,13 @@ import {
   Box,
   HStack,
 } from '@chakra-ui/react';
-
-const Pagination = ({items, pageSize, currentPage, onPageChange}: any) => {
+type a = {
+  items: number;
+  pageSize: number;
+  currentPage: number;
+  onPageChange: Function; // onPageChange は関数を取ってきている感じですが関数の型の書き方が分からなかった為、調べて分からなかったら any 型 でもいいかもしれません
+}
+const Pagination = ({items, pageSize, currentPage, onPageChange}: a) => {
   const pageCount = items / pageSize;
   if(Math.ceil(pageCount) === 1) return null
   const pages = _.range(1, pageCount + 1);
