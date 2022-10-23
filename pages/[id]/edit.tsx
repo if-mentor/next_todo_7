@@ -34,12 +34,8 @@ const Edit = () => {
           setEditTodoId(docSnap.id);
           setEditTodo(docSnap.data());
         } else {
-          // データを取得できなかった時にアラートなどをだす
-          console.log("No such document!");
+          alert("ドキュメントを取得できませんでした。リロードしてください。");
         }
-      } else {
-        // データを取得できなかった時にアラートなどをだす
-        console.log('No such')
       }
     })()
   }, [isReady]);
