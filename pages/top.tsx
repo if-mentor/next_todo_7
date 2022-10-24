@@ -32,8 +32,6 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
 import { Header } from "../components/Header";
 import { useAppContext } from "../context/appContext";
 import parseTimestampToDate from "../utils/parseTimestampToDate";
@@ -58,7 +56,6 @@ const Top: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const statuses = ["NOT STARTED", "DOING", "DONE"];
   const priorities = ["High", "Middle", "Low"];
-  const uid = useRecoilValue(userState).uid;
   const { user } = useAppContext();
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({
     task: "",
@@ -337,8 +334,10 @@ const Top: React.FC = () => {
               {filteredTodos.map((todo) => {
                 return (
                   <Tr key={todo.id}>
-                    <Td textAlign="left" pl="10px">
+                    <Td textAlign="left" pl="10px" >
+                      <Button variant="link" onClick={()=>router.push(`${todo.id}/detail`)}>
                       {todo.task}
+                      </Button>
                     </Td>
                     <Td textAlign="center">
                       <Button

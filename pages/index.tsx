@@ -11,8 +11,6 @@ import {
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { Header } from "../components/Header";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
 import { useAppContext } from "../context/appContext";
 
 type FormValues = {
@@ -29,7 +27,6 @@ const loginPage = () => {
     trigger,
     register,
   } = useForm();
-  const uid = useRecoilValue(userState).uid;
   const { user, error, registerUser } = useAppContext();
 
   React.useEffect(() => {
