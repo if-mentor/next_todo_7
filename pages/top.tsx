@@ -22,7 +22,7 @@ import {
 import { useRouter } from 'next/router';
 import {
   collection,
-  getDocs,
+  onSnapshot,
   orderBy,
   query,
   Timestamp,
@@ -35,6 +35,7 @@ import { db } from '../firebase/firebase';
 import { useRecoilValue } from 'recoil';
 import { userState } from '../Atoms/userAtom';
 import { Header } from '../components/Header';
+import { useAppContext } from '../context/appContext';
 import parseTimestampToDate from '../utils/parseTimestampToDate';
 
 export type Todo = {
@@ -58,11 +59,16 @@ const Top: React.FC = () => {
   const statuses = ['NOT STARTED', 'DOING', 'DONE'];
   const priorities = ['High', 'Middle', 'Low'];
   const uid = useRecoilValue(userState).uid;
+  const { user } = useAppContext();
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({
     task: '',
     status: '',
     priority: '',
   });
+
+  React.useEffect(() => {
+    !!user || router.push('/login');
+  }, [user]);
 
   const filteredTodos: Todo[] = useMemo(() => {
     //Memo:...todosでやると配列のコピーになり、オブジェクトは参照になる
@@ -147,32 +153,25 @@ const Top: React.FC = () => {
     });
   };
 
-  const getTodos: () => void = async () => {
-    const querySnapshot = await getDocs(
-      query(
-        collection(db, 'todos'),
-        where('category', '==', 'top'),
-        // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
-        orderBy('create', 'desc')
-      )
-    );
-    const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      task: doc.data().task,
-      status: doc.data().status,
-      priority: doc.data().priority,
-      create_date: doc.data().create,
-      update_date: doc.data().update,
-    }));
-    setTodos(initialTodos);
-  };
-
   React.useEffect(() => {
-    if (!uid) {
-      router.push('/login');
-    } else {
-      getTodos();
-    }
+    const getTodos = query(
+      collection(db, 'todos'),
+      where('category', '==', 'top'),
+      // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
+      orderBy('create', 'desc')
+    );
+    const unsubscribe = onSnapshot(getTodos, (querySnapshot) => {
+      const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        task: doc.data().task,
+        status: doc.data().status,
+        priority: doc.data().priority,
+        create_date: doc.data().create,
+        update_date: doc.data().update,
+      }));
+      setTodos(initialTodos);
+    });
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -371,7 +370,7 @@ const Top: React.FC = () => {
                     <Td>
                       <HStack spacing="16px" justify="center">
                         {/* TODO:対象TODOの編集画面に遷移できるようにする */}
-                        <button onClick={() => router.push('/edit')}>
+                        <button onClick={() => router.push(`${todo.id}/edit`)}>
                           <Image src="Edit.png" />
                         </button>
                         <button onClick={() => trashTodo(todo.id)}>
