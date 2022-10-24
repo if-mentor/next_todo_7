@@ -71,10 +71,6 @@ const loginPage = () => {
 
   return (
     <>
-      {/* {isLoading ? (
-        <p>Loading</p>
-      ) : (
-        <> */}
       <Header />
       <Center w="100vw" pt="100px">
         <Container
@@ -171,8 +167,6 @@ const loginPage = () => {
           </form>
         </Container>
       </Center>
-      {/* </>
-      )} */}
     </>
   );
 };
