@@ -7,12 +7,11 @@ import {
   VStack,
   FormControl,
   FormErrorMessage,
+  Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { Header } from "../components/Header";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
 import { useAppContext } from "../context/appContext";
 
 type FormValues = {
@@ -29,12 +28,7 @@ const loginPage: React.FC = () => {
     trigger,
     register,
   } = useForm();
-  const uid = useRecoilValue(userState).uid;
-  const { user, signInUser } = useAppContext();
-
-  React.useEffect(() => {
-    !!user && router.push("/top");
-  }, []);
+  const { forgotPassword } = useAppContext();
 
   const validationRules = {
     email: {
@@ -44,21 +38,14 @@ const loginPage: React.FC = () => {
         message: "Invalid email address",
       },
     },
-    password: {
-      required: "Password is required.",
-      minLength: {
-        value: 6,
-        message: "Password must be more than 6 characters",
-      },
-      maxLength: {
-        value: 20,
-        message: "Password must be less than 20 characters",
-      },
-    },
   };
 
   async function onSubmit(values: FormValues) {
-    await signInUser(values.email, values.password);
+    forgotPassword(values.email);
+    alert(
+      `An email has sent to ${values.email} Please check your mail box. If you can't find it in your mail box, please also check your spam folder.`
+    );
+    router.push("/login");
   }
 
   return (
@@ -73,6 +60,8 @@ const loginPage: React.FC = () => {
           borderRadius="3xl"
           maxW="800px"
         >
+          <Text>メールアドレスをパスワード再設定メールを送信します。</Text>
+          <Text mb={8}>登録時のメールアドレスをご入力してください。</Text>
           <form onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={[6, 8]} mb={[8, 12]}>
               <FormControl isInvalid={!!errors.email}>
@@ -91,21 +80,6 @@ const loginPage: React.FC = () => {
                 />
                 <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={!!errors.password}>
-                <Input
-                  id="password"
-                  type="password"
-                  required={true}
-                  placeholder="Please enter your password."
-                  sx={inputStyle}
-                  {...register("password", validationRules.password)}
-                  onKeyUp={() => {
-                    trigger("password");
-                  }}
-                  error={Boolean(errors.password)}
-                />
-                <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
-              </FormControl>
             </VStack>
             <VStack spacing={[6, 8]}>
               <Button
@@ -115,36 +89,16 @@ const loginPage: React.FC = () => {
                 type="submit"
                 sx={buttonStyle}
               >
-                ログイン
+                メール送信
               </Button>
-              {/* <Button
-                mt={4}
-                _hover={{
-                  background: "gray.400",
+              <Button
+                variant="link"
+                onClick={() => {
+                  router.push("/login");
                 }}
-                _active={{
-                  background: "gray.500",
-                }}
-                bgColor="gray.300"
-                color="green.50"
-                type="button"
-                sx={buttonStyle}
               >
-                GOOGLE LOGIN
-              </Button> */}
-              <VStack>
-                <Button
-                  variant="link"
-                  onClick={() => {
-                    router.push("/");
-                  }}
-                >
-                  アカウントの作成はこちら
-                </Button>
-                <Button variant="link" onClick={() => router.push("/reissue")}>
-                  パスワードの再発行はこちら
-                </Button>
-              </VStack>
+                アカウントをお持ちの方はこちら→ログイン
+              </Button>
             </VStack>
           </form>
         </Container>
