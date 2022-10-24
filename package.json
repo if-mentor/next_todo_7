@@ -20,8 +20,7 @@
     "next": "12.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.37.0",
-    "recoil": "^0.7.5"
+    "react-hook-form": "^7.37.0"
   },
   "devDependencies": {
     "@types/node": "18.7.18",

@@ -32,8 +32,6 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
 import { Header } from "../components/Header";
 import { useAppContext } from "../context/appContext";
 import parseTimestampToDate from "../utils/parseTimestampToDate";
@@ -58,7 +56,6 @@ const Top: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const statuses = ["NOT STARTED", "DOING", "DONE"];
   const priorities = ["High", "Middle", "Low"];
-  const uid = useRecoilValue(userState).uid;
   const { user } = useAppContext();
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({
     task: "",
@@ -69,7 +66,6 @@ const Top: React.FC = () => {
   React.useEffect(() => {
     !!user || router.push("/login");
   }, [user]);
-
 
   const filteredTodos: Todo[] = useMemo(() => {
     //Memo:...todosでやると配列のコピーになり、オブジェクトは参照になる
@@ -154,6 +150,19 @@ const Top: React.FC = () => {
     });
   };
 
+  const handleClickStatus: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: string,
+    status: string
+  ) => void = (e, id, status) => {
+    //  statusesリストにおいて、現在のstatusの次のindexのstatusをnewStatusとする
+    const newStatus = statuses[(statuses.indexOf(status) + 1) % 3];
+    updateDoc(doc(db, "todos", id), {
+      status: newStatus,
+      update: serverTimestamp(),
+    });
+  };
+
   React.useEffect(() => {
     const getTodos = query(
       collection(db, "todos"),
@@ -170,7 +179,7 @@ const Top: React.FC = () => {
         create_date: doc.data().create,
         update_date: doc.data().update,
       }));
-      setTodos(initialTodos)
+      setTodos(initialTodos);
     });
     return () => unsubscribe();
   }, []);
@@ -325,11 +334,13 @@ const Top: React.FC = () => {
               {filteredTodos.map((todo) => {
                 return (
                   <Tr key={todo.id}>
-                    <Td textAlign="left" pl="10px">
+                    <Td textAlign="left" pl="10px" >
+                      <Button variant="link" onClick={()=>router.push(`${todo.id}/detail`)}>
                       {todo.task}
+                      </Button>
                     </Td>
                     <Td textAlign="center">
-                      <Box
+                      <Button
                         w="120px"
                         h="40px"
                         lineHeight="40px"
@@ -346,9 +357,12 @@ const Top: React.FC = () => {
                             ? "green.50"
                             : "blackAlpha.800"
                         }
+                        onClick={(e) =>
+                          handleClickStatus(e, todo.id, todo.status)
+                        }
                       >
                         <Text>{todo.status}</Text>
-                      </Box>
+                      </Button>
                     </Td>
                     <Td textAlign="center">
                       <Select
