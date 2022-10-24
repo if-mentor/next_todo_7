@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Head from "next/head";
+import { useRouter } from "next/router";
 import {
   Button,
   Container,
@@ -12,13 +14,46 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import Head from "next/head";
+import { doc, DocumentData, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
+import parseTimestampToDate from "../../utils/parseTimestampToDate";
 
 const Edit = () => {
+  const [editTodoId, setEditTodoId] = useState<string>('');
+  // オブジェクトに値をいれておかないと controle と uncontrole で制御するのかしないのかわからないため警告が出る、一時的な回避
+  const [editTodo, setEditTodo] = useState<DocumentData>({ task: '' });
+  const router = useRouter();
+  const { isReady } = useRouter();
+
+  useEffect(() => {
+    (async () => {
+      if (isReady) {
+        const docRef = doc(db, "todos", `${router.query.id}`);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setEditTodoId(docSnap.id);
+          setEditTodo(docSnap.data());
+        } else {
+          alert("ドキュメントを取得できませんでした。リロードしてください。");
+        }
+      }
+    })()
+  }, [isReady]);
+
+  const onClickEditTodoSave = async () => {
+    const ref = doc(db, "todos", editTodoId);
+    await updateDoc(ref, {
+      task: editTodo.task,
+      detail: editTodo.detail,
+      update: serverTimestamp(),
+    });
+    router.push('/top');
+  }
+
   return (
     <>
       <Head>
-        <title>Edit</title>
+        <title>todo team7 - Edit</title>
       </Head>
       <Container mt="20px" p="0" w="85%" maxW="1080px">
         <VStack>
@@ -43,6 +78,7 @@ const Edit = () => {
               borderWidth="1px"
               borderColor="blackAlpha.800"
               borderRadius="50px"
+              onClick={() => router.push('/top')}
             >
               Back
             </Button>
@@ -55,12 +91,12 @@ const Edit = () => {
                 fontWeight="bold"
                 lineHeight="24px"
                 color="blackAlpha.800"
-                htmlFor="title"
+                htmlFor="task"
               >
                 TITLE
               </FormLabel>
               <Input
-                id="title"
+                id="task"
                 h="72px"
                 mt="4px"
                 p="8px 16px"
@@ -71,6 +107,8 @@ const Edit = () => {
                 borderColor="blackAlpha.800"
                 borderRadius="10px"
                 type="Text"
+                value={editTodo?.task}
+                onChange={(e) => setEditTodo({ ...editTodo, task: e.target.value })}
               />
               <FormErrorMessage></FormErrorMessage>
             </FormControl>
@@ -94,6 +132,8 @@ const Edit = () => {
                 borderWidth="1px"
                 borderColor="blackAlpha.800"
                 borderRadius="10px"
+                value={editTodo?.detail}
+                onChange={(e) => setEditTodo({ ...editTodo, detail: e.target.value })}
               />
             </FormControl>
 
@@ -115,7 +155,9 @@ const Edit = () => {
                   fontWeight="bold"
                   lineHeight="20px"
                   color="blackAlpha.800"
-                >2022-9-21 9:50</Text>
+                >
+                  {parseTimestampToDate(editTodo.create, "-")}
+                </Text>
               </Flex>
 
               <Flex ml="27px" direction="column">
@@ -126,7 +168,6 @@ const Edit = () => {
                   color="blackAlpha.800"
                 >
                   Update
-                  
                 </Text>
                 <Text
                   mt="4px"
@@ -134,13 +175,15 @@ const Edit = () => {
                   fontWeight="bold"
                   lineHeight="20px"
                   color="blackAlpha.800"
-                >2022-9-21 9:51</Text>
+                >
+                  {parseTimestampToDate(editTodo.update, "-")}
+                </Text>
               </Flex>
             </Flex>
 
             <Flex w="100%" flexDirection="row-reverse">
               <Button
-                type="submit"
+                type="button"
                 w="112px"
                 h="40px"
                 m="10px 2px 0 8px"
@@ -152,6 +195,7 @@ const Edit = () => {
                 borderWidth="1px"
                 borderColor="blackAlpha.800"
                 borderRadius="50px"
+                onClick={() => onClickEditTodoSave()}
               >
                 UPDATE
               </Button>
@@ -163,4 +207,4 @@ const Edit = () => {
   );
 };
 
-export default Edit
+export default Edit;

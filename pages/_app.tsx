@@ -9,6 +9,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     <AppContextProvider>
       <RecoilRoot>
         <ChakraProvider>
+        	<Head>
+					　　<title>next todo 7</title>
+				　　　　</Head>
           <Component {...pageProps} />
         </ChakraProvider>
       </RecoilRoot>
