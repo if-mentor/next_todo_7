@@ -52,7 +52,7 @@ export const AppContextProvider = ({ children }) => {
   }, []);
 
   const registerUser = (email, password, name) => {
-    setLoading(true);
+    // setLoading(true);
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         return updateProfile(auth.currentUser, {
