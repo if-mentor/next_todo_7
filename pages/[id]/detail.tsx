@@ -64,6 +64,10 @@ const Detail = () => {
   const router = useRouter();
   const { user } = useAppContext();
 
+  React.useEffect(() => {
+    !!user || router.push("/login");
+  }, [user]);
+
   // todo取得
   useEffect(() => {
     (async () => {
@@ -88,7 +92,7 @@ const Detail = () => {
   // コメントの取得
   useEffect(() => {
     if (router.isReady) {
-      setCommentUserName(user.displayName);
+      setCommentUserName(user?.displayName);
       const unsubscribe = onSnapshot(
         query(
           collection(db, "todos", `${router.query.id}`, "comments"),
