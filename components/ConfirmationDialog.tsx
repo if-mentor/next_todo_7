@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -9,22 +9,49 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { handleDeleteData } from '../pages/trash';
+import { handleDeleteAllData } from '../pages/trash';
+import { handleRestoreAllData } from '../pages/trash';
+import { Todo } from '../pages/top';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   cancelRef: any;
-  // onClick: () => void;
   dialogText: string;
+  todos: Todo[];
   deleteTodoId: string;
 };
 
 const ConfirmationDialog: FC<Props> = (props) => {
-  const { isOpen, onClose, cancelRef, dialogText, deleteTodoId } = props;
-  console.log(deleteTodoId);
-  const handler = (deleteTodoId: string) => {
-    console.log(deleteTodoId);
-    dialogText === 'UNIT_DELETE' ? handleDeleteData(deleteTodoId) : 'XXX';
+  const [dialogTitle, setDialogTitle] = useState(['', '']);
+  const { isOpen, onClose, cancelRef, dialogText, todos, deleteTodoId } = props;
+
+  useEffect(() => {
+    switch (dialogText) {
+      case 'UNIT_DELETE':
+        return setDialogTitle(['Delete Todo', 'Delete']);
+      case 'ALL_DELETE':
+        return setDialogTitle(['Delete All Todos', 'Delete']);
+      case 'ALL_RESTORE':
+        return setDialogTitle(['Restore All Todos', 'Restore']);
+      default:
+        break;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dialogText]);
+
+  const handlerDeleteOrRestore = (deleteTodoId: string) => {
+    switch (dialogText) {
+      case 'UNIT_DELETE':
+        console.log(deleteTodoId);
+        handleDeleteData(deleteTodoId);
+      case 'ALL_DELETE':
+        handleDeleteAllData(todos);
+      case 'ALL_RESTORE':
+        handleRestoreAllData(todos);
+      default:
+        break;
+    }
     onClose();
   };
   return (
@@ -36,7 +63,8 @@ const ConfirmationDialog: FC<Props> = (props) => {
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {dialogText === 'UNIT_DELETE' ? 'Delete Todo' : 'Delete All Todos'}
+            {dialogTitle[0]}
+            {/* {dialogText === 'UNIT_DELETE' ? 'Delete Todo' : 'Delete All Todos'} */}
           </AlertDialogHeader>
 
           <AlertDialogBody>
@@ -53,10 +81,10 @@ const ConfirmationDialog: FC<Props> = (props) => {
               // onClick={() => {
               //   onClick(), onClose();
               // }}
-              onClick={() => handler()}
+              onClick={() => handlerDeleteOrRestore(deleteTodoId)}
               ml={3}
             >
-              Delete
+              {dialogTitle[1]}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

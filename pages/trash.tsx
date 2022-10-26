@@ -15,12 +15,6 @@ import {
   Th,
   Td,
   useDisclosure,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter,
 } from '@chakra-ui/react';
 import {
   collection,
@@ -38,36 +32,46 @@ import { userState } from '../Atoms/userAtom';
 import { Todo } from './top';
 import parseTimestampToDate from '../utils/parseTimestampToDate';
 import ConfirmationDialog from '../components/ConfirmationDialog';
+// import useDeleteRestore from '../hooks/useDeleteRestore';
 
 //単一削除
 export const handleDeleteData: (id: string) => void = async (id) => {
-  console.log(id);
-  await deleteDoc(doc(db, 'todos', id))
-    .then(() => alert('データが削除されました'))
-    .catch((err) => {
+  console.log('del func');
+  await deleteDoc(doc(db, 'todos', id)).then(() =>
+    alert('データが削除されました')
+  );
+};
+
+// 一括削除
+export const handleDeleteAllData: (todos: Todo[]) => void = (todos) => {
+  if (todos === null) return;
+  todos.map(async ({ id }) => {
+    await deleteDoc(doc(db, 'todos', id));
+  });
+};
+
+// 一括リストア
+export const handleRestoreAllData: (todos: Todo[]) => void = (todos) => {
+  if (todos === null) return;
+  todos.map(async ({ id }) => {
+    await updateDoc(doc(db, 'todos', id), {
+      category: 'top',
+    }).catch((err) => {
       alert(err.message);
     });
+  });
 };
 
 const Trash = () => {
   const router = useRouter();
   const uid = useRecoilValue(userState).uid;
-  const [deleteTodoId, setDeleteTodoId] = useState('');
+  const [deleteTodoId, setDeleteTodoId] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>();
-  const [dialogText, setDialogText] = useState('');
-  const [dialogFunc, setDialogFunc] = useState({ fn: () => {} });
-
-  //削除よてい
-  // const initialTodos = [
-  //   {
-  //     id: '1',
-  //     task: 'test1',
-  //     status: 'DONE',
-  //     priority: 'High',
-  //   },
-  // ];
+  const [dialogText, setDialogText] = useState<string>('');
   const [todos, setTodos] = useState<Todo[]>([]);
+  const todosForDialog = [...todos];
+  // const { deleteOrRestoreConfirmation } = useDeleteRestore();
 
   //ログイン確認
   useEffect(() => {
@@ -77,26 +81,13 @@ const Trash = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //使っていない。最後に削除予定
-  // useEffect(() => {
-  //   auth.onAuthStateChanged(async (user) => {
-  //     console.log(user);
-  //     if (user) {
-  //       getTodos();
-  //     } else {
-  //       router.push('/login');
-  //     }
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
-  //レンダリング及びtodo更新時にDBからTrashデータ取得（DB上限で一時的にコメントアウト）
+  //レンダリング時にDBからTrashデータ取得
   useEffect(() => {
     const getTodosQuery = query(
       collection(db, 'todos'),
-      where('category', '==', 'trash')
-      // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
-      // orderBy('create', 'desc')
+      where('category', '==', 'trash'),
+      // where('author', '==', uid), // 自分のTodoのみ表示させる場合はこの行を追加
+      orderBy('create', 'desc')
     );
     const unsubscribe = onSnapshot(getTodosQuery, (querySnapshot) => {
       const getTodos: Todo[] = querySnapshot.docs.map((doc) => ({
@@ -109,7 +100,30 @@ const Trash = () => {
       setTodos(getTodos);
     });
     return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  //一括リストア・単一削除・一括削除の確認Dialogハンドラー
+  const deleteOrRestoreConfirmation: (action: string, id: string) => void = (
+    action,
+    id
+  ) => {
+    switch (action) {
+      case 'ALL_RESTORE':
+        setDialogText('ALL_RESTORE');
+        onOpen();
+        break;
+      case 'UNIT_DELETE':
+        setDeleteTodoId(id);
+        setDialogText('UNIT_DELETE');
+        onOpen();
+        break;
+      case 'ALL_DELETE':
+        setDialogText('ALL_DELETE');
+        onOpen();
+        break;
+    }
+  };
 
   //単一リストア
   const handleRestoreData: (id: string) => void = async (id) => {
@@ -118,35 +132,9 @@ const Trash = () => {
     });
   };
 
-  //削除（確認）
-  const handleDeleteConfirmation: (id: string) => void = (id) => {
-    setDeleteTodoId(id);
-    setDialogText('UNIT_DELETE');
-    // setDialogFunc({ fn: () => handleDeleteData(deleteTodoId) });
-    onOpen();
-  };
-
-  //一括削除（確認）
-  const handleAllDeleteConfirmation: () => void = () => {
-    setDialogFunc({ fn: () => handleDleteAllData });
-    setDialogText('ALL_DELETE');
-    onOpen();
-  };
-
-  // 一括削除
-  const handleDleteAllData: () => void = () => {
-    if (todos === null) return;
-    todos.map(async ({ id }) => {
-      await deleteDoc(doc(db, 'todos', id)).catch((err) => {
-        alert(err.message);
-      });
-    });
-    console.log(todos);
-  };
-
   return (
     <>
-      <Container p="110px 100px 0" w="100%" maxW="1080px">
+      <Container p="110px 100px 0" w="100%" maxW="1200px">
         <Flex justify="space-between">
           <Text
             fontSize="28px"
@@ -166,7 +154,7 @@ const Trash = () => {
               borderRadius="3xl"
               fontSize="18px"
               fontWeight="bold"
-              onClick={() => handleAllDeleteConfirmation()}
+              onClick={() => deleteOrRestoreConfirmation('ALL_DELETE', '')}
             >
               Delete all
             </Button>
@@ -180,6 +168,7 @@ const Trash = () => {
               fontSize="18px"
               fontWeight="bold"
               ml="24px"
+              onClick={() => deleteOrRestoreConfirmation('ALL_RESTORE', '')}
             >
               Restore all
             </Button>
@@ -319,8 +308,12 @@ const Trash = () => {
                             fontSize="18px"
                             fontWeight="bold"
                             p="0"
-                            // onClick={(e) => handleDeleteData(e, todo.id)}
-                            onClick={() => handleDeleteConfirmation(todo.id)}
+                            onClick={() =>
+                              deleteOrRestoreConfirmation(
+                                'UNIT_DELETE',
+                                todo.id
+                              )
+                            }
                           >
                             Delete
                           </Button>
@@ -334,12 +327,9 @@ const Trash = () => {
                             fontSize="18px"
                             fontWeight="bold"
                             p="0"
-                            onClick={
-                              (() => onClose(),
-                              () => {
-                                handleRestoreData(todo.id);
-                              })
-                            }
+                            onClick={() => {
+                              handleRestoreData(todo.id);
+                            }}
                           >
                             Restore
                           </Button>
@@ -352,41 +342,8 @@ const Trash = () => {
                       cancelRef={cancelRef}
                       deleteTodoId={deleteTodoId}
                       dialogText={dialogText}
-                      // onClick={dialogFunc.fn}
+                      todos={todosForDialog}
                     />
-                    {/* <AlertDialog
-                      isOpen={isOpen}
-                      leastDestructiveRef={cancelRef}
-                      onClose={onClose}
-                    >
-                      <AlertDialogOverlay>
-                        <AlertDialogContent>
-                          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                            Delete Todo
-                          </AlertDialogHeader>
-
-                          <AlertDialogBody>
-                            Are you sure? You can't undo this action afterwards.
-                          </AlertDialogBody>
-
-                          <AlertDialogFooter>
-                            <Button ref={cancelRef} onClick={onClose}>
-                              Cancel
-                            </Button>
-                            <Button
-                              colorScheme="red"
-                              //複数処理のときは、アローの後を｛関数A,関数B｝にする
-                              onClick={() => {
-                                handleDeleteData(deleteTodoId), onClose();
-                              }}
-                              ml={3}
-                            >
-                              Delete
-                            </Button>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialogOverlay>
-                    </AlertDialog> */}
                   </>
                 );
               })}

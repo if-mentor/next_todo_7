@@ -156,9 +156,9 @@ const Top: React.FC = () => {
   React.useEffect(() => {
     const getTodos = query(
       collection(db, 'todos'),
-      where('category', '==', 'top')
+      where('category', '==', 'top'),
       // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
-      // orderBy('create', 'desc')
+      orderBy('create', 'desc')
     );
     const unsubscribe = onSnapshot(getTodos, (querySnapshot) => {
       const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
