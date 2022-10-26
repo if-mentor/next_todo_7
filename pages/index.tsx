@@ -95,7 +95,6 @@ const loginPage = () => {
                   onKeyUp={() => {
                     trigger("email");
                   }}
-                  error={Boolean(errors.email)}
                 />
                 <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
               </FormControl>
@@ -110,7 +109,6 @@ const loginPage = () => {
                   onKeyUp={() => {
                     trigger("password");
                   }}
-                  error={Boolean(errors.password)}
                 />
                 <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
               </FormControl>
@@ -125,7 +123,6 @@ const loginPage = () => {
                   onKeyUp={() => {
                     trigger("name");
                   }}
-                  error={Boolean(errors.name)}
                 />
                 <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
               </FormControl>

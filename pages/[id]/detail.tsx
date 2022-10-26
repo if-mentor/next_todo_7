@@ -38,6 +38,8 @@ import { EditIcon } from "@chakra-ui/icons";
 import styles from "../../styles/Detail.module.css";
 import parseTimestampToDate from "../../utils/parseTimestampToDate";
 import { Header } from "../../components/Header";
+import Head from "next/head";
+import { useAppContext } from "../../context/appContext";
 
 type CommentUser = {
   id: string;
@@ -60,6 +62,7 @@ const Detail = () => {
   });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
+  const { user } = useAppContext();
 
   // todo取得
   useEffect(() => {
@@ -75,34 +78,36 @@ const Detail = () => {
             create_date: docSnap.data().create,
             update_date: docSnap.data().update,
           });
-					setCommentUserName(docSnap.data().author)
         } else {
           alert("ドキュメントを取得できませんでした。リロードしてください。");
         }
       }
     })();
-  }, []);
+  }, [router.isReady]);
 
   // コメントの取得
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(
-        collection(db, "todos", `${router.query.id}`, "comments"),
-        orderBy("timestamp", "desc")
-      ),
-      (snapshot) => {
-        const userComments: CommentUser[] = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-          comment: doc.data().comment,
-          username: doc.data().username,
-          timestamp: doc.data().timestamp,
-        }));
-        setComments(userComments);
-      }
-    );
-    return () => unsubscribe();
-  }, []);
+    if (router.isReady) {
+      setCommentUserName(user.displayName);
+      const unsubscribe = onSnapshot(
+        query(
+          collection(db, "todos", `${router.query.id}`, "comments"),
+          orderBy("timestamp", "desc")
+        ),
+        (snapshot) => {
+          const userComments: CommentUser[] = snapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+            comment: doc.data().comment,
+            username: doc.data().username,
+            timestamp: doc.data().timestamp,
+          }));
+          setComments(userComments);
+        }
+      );
+      return () => unsubscribe();
+    }
+  }, [router.isReady]);
 
   //コメントの投稿
   async function sendComment(event: React.MouseEvent<HTMLButtonElement>) {
@@ -116,15 +121,14 @@ const Detail = () => {
       username: commentedUserName,
       timestamp: serverTimestamp(),
     });
-		onClose()
+    onClose();
   }
-
 
   return (
     <Box>
-      {/* <Heading bg="green.300" py={{ base: 2 }} px={{ base: 4 }}>
-        TODO
-      </Heading> */}
+      <Head>
+        <title>next todo 7 - Detail</title>
+      </Head>
       <Header />
       <Box py={{ base: 28 }} px={{ base: 6 }}>
         <Flex justifyContent="space-between">
@@ -236,13 +240,17 @@ const Detail = () => {
               <Box className={styles.time} fontWeight="bold">
                 create
                 <br />
-                {todo.create_date ? parseTimestampToDate(todo.create_date, "-"):""}
+                {todo.create_date
+                  ? parseTimestampToDate(todo.create_date, "-")
+                  : ""}
               </Box>
               <Spacer />
               <Box className={styles.time} fontWeight="bold">
                 update
                 <br />
-                {todo.update_date ? parseTimestampToDate(todo.update_date, "-") : "-"}
+                {todo.update_date
+                  ? parseTimestampToDate(todo.update_date, "-")
+                  : "-"}
               </Box>
             </Flex>
           </Box>
