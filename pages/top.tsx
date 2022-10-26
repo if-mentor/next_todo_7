@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -44,7 +44,7 @@ export type Todo = {
   status: 'NOT STARTED' | 'DOING' | 'DONE';
   priority: 'High' | 'Middle' | 'Low';
   create_date: Timestamp;
-  update_date: Timestamp | null;
+  update_date?: Timestamp | null;
 };
 
 type FilterQuery = {
@@ -156,9 +156,9 @@ const Top: React.FC = () => {
   React.useEffect(() => {
     const getTodos = query(
       collection(db, 'todos'),
-      where('category', '==', 'top'),
+      where('category', '==', 'top')
       // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
-      orderBy('create', 'desc')
+      // orderBy('create', 'desc')
     );
     const unsubscribe = onSnapshot(getTodos, (querySnapshot) => {
       const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
@@ -177,7 +177,7 @@ const Top: React.FC = () => {
   return (
     <>
       <Header />
-      <Container p="110px 100px 0" w="100%" maxW="1080px">
+      <Container p="110px 100px 0" w="100%" maxW="1200px">
         <Box pb="15px">
           <Text
             fontSize="28px"

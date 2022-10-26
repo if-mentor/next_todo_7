@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from 'react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -6,10 +6,10 @@ import {
   signOut,
   updateProfile,
   sendPasswordResetEmail,
-} from "firebase/auth";
-import { useRouter } from "next/router";
+} from 'firebase/auth';
+import { useRouter } from 'next/router';
 
-import { auth } from "../firebase/firebase";
+import { auth } from '../firebase/firebase';
 
 // type GlobalState = {
 //   user: any;
@@ -18,12 +18,12 @@ import { auth } from "../firebase/firebase";
 // };
 
 export const AppContext = createContext({
-  user: { displayName: "" },
+  user: { displayName: '' },
   error: null,
-  signInUser:()=>{},
-  registerUser:()=>{},
-  logoutUser:()=>{},
-  forgotPassword:()=>{},
+  signInUser: () => {},
+  registerUser: () => {},
+  logoutUser: () => {},
+  forgotPassword: () => {},
 });
 
 export const useAppContext = () => {
@@ -35,7 +35,7 @@ export const AppContextProvider = ({ children }) => {
 
   const [user, setUser] = useState(null);
   // const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // setLoading(true);
@@ -45,14 +45,14 @@ export const AppContextProvider = ({ children }) => {
       } else {
         setUser(null);
       }
-      setError("");
+      setError('');
       // setLoading(false);
     });
     return unsubscribe;
   }, []);
 
   const registerUser = (email, password, name) => {
-    setLoading(true);
+    // setLoading(true);
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         return updateProfile(auth.currentUser, {
@@ -61,7 +61,7 @@ export const AppContextProvider = ({ children }) => {
       })
       .then((res) => {
         // setLoading(false);
-        router.push("/top");
+        router.push('/top');
       })
       .catch((err) => {
         alert(`Sign-up is failed. Error:${err.message}`);
@@ -74,7 +74,7 @@ export const AppContextProvider = ({ children }) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((res) => {
         // setLoading(false);
-        router.push("/top");
+        router.push('/top');
       })
       .catch((err) => {
         alert(`Login is failed. Error:${err.message}`);

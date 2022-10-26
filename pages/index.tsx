@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Button,
   Center,
@@ -7,13 +7,13 @@ import {
   VStack,
   FormControl,
   FormErrorMessage,
-} from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import { Header } from "../components/Header";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
-import { useAppContext } from "../context/appContext";
+} from '@chakra-ui/react';
+import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import { Header } from '../components/Header';
+import { useRecoilValue } from 'recoil';
+import { userState } from '../Atoms/userAtom';
+import { useAppContext } from '../context/appContext';
 
 type FormValues = {
   email: string;
@@ -33,37 +33,37 @@ const loginPage = () => {
   const { user, error, registerUser } = useAppContext();
 
   React.useEffect(() => {
-    !!user && router.push("/top");
+    !!user && router.push('/top');
   }, []);
 
   const validationRules = {
     email: {
-      required: "Email is required.",
+      required: 'Email is required.',
       pattern: {
         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-        message: "Invalid email address",
+        message: 'Invalid email address',
       },
     },
     password: {
-      required: "Password is required.",
+      required: 'Password is required.',
       minLength: {
         value: 6,
-        message: "Password must be more than 6 characters",
+        message: 'Password must be more than 6 characters',
       },
       maxLength: {
         value: 20,
-        message: "Password must be less than 20 characters",
+        message: 'Password must be less than 20 characters',
       },
     },
     name: {
-      required: "Name is required.",
+      required: 'Name is required.',
       minLength: {
         value: 2,
-        message: "Name must be more than 2 characters",
+        message: 'Name must be more than 2 characters',
       },
       maxLength: {
         value: 20,
-        message: "Name must be less than 20 characters",
+        message: 'Name must be less than 20 characters',
       },
     },
   };
@@ -98,9 +98,9 @@ const loginPage = () => {
                   required={true}
                   placeholder="Please enter your email."
                   sx={inputStyle}
-                  {...register("email", validationRules.email)}
+                  {...register('email', validationRules.email)}
                   onKeyUp={() => {
-                    trigger("email");
+                    trigger('email');
                   }}
                   error={Boolean(errors.email)}
                 />
@@ -113,9 +113,9 @@ const loginPage = () => {
                   required={true}
                   placeholder="Please enter your password."
                   sx={inputStyle}
-                  {...register("password", validationRules.password)}
+                  {...register('password', validationRules.password)}
                   onKeyUp={() => {
-                    trigger("password");
+                    trigger('password');
                   }}
                   error={Boolean(errors.password)}
                 />
@@ -128,9 +128,9 @@ const loginPage = () => {
                   required={true}
                   placeholder="Please enter your name."
                   sx={inputStyle}
-                  {...register("name", validationRules.name)}
+                  {...register('name', validationRules.name)}
                   onKeyUp={() => {
-                    trigger("name");
+                    trigger('name');
                   }}
                   error={Boolean(errors.name)}
                 />
@@ -165,7 +165,7 @@ const loginPage = () => {
               <Button
                 variant="link"
                 onClick={() => {
-                  router.push("/login");
+                  router.push('/login');
                 }}
               >
                 アカウントをお持ちの方はこちら
@@ -182,19 +182,19 @@ const loginPage = () => {
 
 const inputStyle = {
   fontSize: [20, 24],
-  bgColor: "green.50",
-  h: ["3rem", "3.6rem"],
-  px: ["1.6rem", "2rem"],
-  borderRadius: "full",
+  bgColor: 'green.50',
+  h: ['3rem', '3.6rem'],
+  px: ['1.6rem', '2rem'],
+  borderRadius: 'full',
 };
 
 const buttonStyle = {
   fontSize: [20, 24],
-  fontWeight: "600",
-  w: "min(70%, 300px)",
-  h: ["3rem", "3.6rem"],
-  mx: "4",
-  borderRadius: "full",
+  fontWeight: '600',
+  w: 'min(70%, 300px)',
+  h: ['3rem', '3.6rem'],
+  mx: '4',
+  borderRadius: 'full',
 };
 
 export default loginPage;
