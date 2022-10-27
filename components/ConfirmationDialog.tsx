@@ -7,9 +7,11 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  useToast,
 } from '@chakra-ui/react';
 import { handleDeleteData } from '../pages/trash';
 import { handleDeleteAllData } from '../pages/trash';
+import { handleRestoreData } from '../pages/trash';
 import { handleRestoreAllData } from '../pages/trash';
 import { Todo } from '../pages/top';
 
@@ -19,12 +21,20 @@ type Props = {
   cancelRef: any;
   dialogText: string;
   todos: Todo[];
-  deleteTodoId: string;
+  deleteOrRestoreTodoId: string;
 };
 
 const ConfirmationDialog: FC<Props> = (props) => {
   const [dialogTitle, setDialogTitle] = useState(['', '']);
-  const { isOpen, onClose, cancelRef, dialogText, todos, deleteTodoId } = props;
+  const {
+    isOpen,
+    onClose,
+    cancelRef,
+    dialogText,
+    todos,
+    deleteOrRestoreTodoId,
+  } = props;
+  const toast = useToast();
 
   useEffect(() => {
     switch (dialogText) {
@@ -32,6 +42,8 @@ const ConfirmationDialog: FC<Props> = (props) => {
         return setDialogTitle(['Delete Todo', 'Delete']);
       case 'ALL_DELETE':
         return setDialogTitle(['Delete All Todos', 'Delete']);
+      case 'UNIT_RESTORE':
+        return setDialogTitle(['Restore Todo', 'Restore']);
       case 'ALL_RESTORE':
         return setDialogTitle(['Restore All Todos', 'Restore']);
       default:
@@ -40,16 +52,20 @@ const ConfirmationDialog: FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialogText]);
 
-  const handlerDeleteOrRestore = (deleteTodoId: string) => {
+  const handlerDeleteOrRestore = (deleteOrRestoreTodoId: string) => {
     switch (dialogText) {
       case 'UNIT_DELETE':
-        handleDeleteData(deleteTodoId);
+        handleDeleteData(deleteOrRestoreTodoId, toast);
         break;
       case 'ALL_DELETE':
-        handleDeleteAllData(todos);
+        handleDeleteAllData(todos, toast);
+        break;
+      case 'UNIT_RESTORE':
+        console.log('hi');
+        handleRestoreData(deleteOrRestoreTodoId, toast);
         break;
       case 'ALL_RESTORE':
-        handleRestoreAllData(todos);
+        handleRestoreAllData(todos, toast);
         break;
       default:
         break;
@@ -83,7 +99,7 @@ const ConfirmationDialog: FC<Props> = (props) => {
               // onClick={() => {
               //   onClick(), onClose();
               // }}
-              onClick={() => handlerDeleteOrRestore(deleteTodoId)}
+              onClick={() => handlerDeleteOrRestore(deleteOrRestoreTodoId)}
               ml={3}
             >
               {dialogTitle[1]}
