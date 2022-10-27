@@ -39,7 +39,6 @@ const create: React.FC = () => {
     control,
     formState: { errors },
   } = useForm<FormValues>();
-  // const [category, setCategory] = React.useState<Category>("top");
   const router = useRouter();
   const { user } = useAppContext();
 
@@ -47,7 +46,6 @@ const create: React.FC = () => {
     !!user || router.push("/login");
   }, [user]);
 
-  // validationは適当です。適宜変更してください。
   const validationRules = {
     title: {
       required: "Title is required",

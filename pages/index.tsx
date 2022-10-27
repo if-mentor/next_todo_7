@@ -11,8 +11,6 @@ import {
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { Header } from "../components/Header";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
 import { useAppContext } from "../context/appContext";
 
 type FormValues = {
@@ -29,7 +27,6 @@ const loginPage = () => {
     trigger,
     register,
   } = useForm();
-  const uid = useRecoilValue(userState).uid;
   const { user, error, registerUser } = useAppContext();
 
   React.useEffect(() => {
@@ -74,10 +71,6 @@ const loginPage = () => {
 
   return (
     <>
-      {/* {isLoading ? (
-        <p>Loading</p>
-      ) : (
-        <> */}
       <Header />
       <Center w="100vw" pt="100px">
         <Container
@@ -102,7 +95,6 @@ const loginPage = () => {
                   onKeyUp={() => {
                     trigger("email");
                   }}
-                  error={Boolean(errors.email)}
                 />
                 <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
               </FormControl>
@@ -117,7 +109,6 @@ const loginPage = () => {
                   onKeyUp={() => {
                     trigger("password");
                   }}
-                  error={Boolean(errors.password)}
                 />
                 <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
               </FormControl>
@@ -132,7 +123,6 @@ const loginPage = () => {
                   onKeyUp={() => {
                     trigger("name");
                   }}
-                  error={Boolean(errors.name)}
                 />
                 <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
               </FormControl>
@@ -174,8 +164,6 @@ const loginPage = () => {
           </form>
         </Container>
       </Center>
-      {/* </>
-      )} */}
     </>
   );
 };
