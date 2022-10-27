@@ -32,8 +32,6 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
-import { useRecoilValue } from 'recoil';
-import { userState } from '../Atoms/userAtom';
 import { Header } from '../components/Header';
 import { useAppContext } from '../context/appContext';
 import parseTimestampToDate from '../utils/parseTimestampToDate';
@@ -59,7 +57,6 @@ const Top: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const statuses = ['NOT STARTED', 'DOING', 'DONE'];
   const priorities = ['High', 'Middle', 'Low'];
-  const uid = useRecoilValue(userState).uid;
   const { user } = useAppContext();
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({
     task: '',
@@ -151,6 +148,19 @@ const Top: React.FC = () => {
   ) => void = (e, id) => {
     updateDoc(doc(db, 'todos', id), {
       priority: e.target.value,
+      update: serverTimestamp(),
+    });
+  };
+
+  const handleClickStatus: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: string,
+    status: string
+  ) => void = (e, id, status) => {
+    //  statusesリストにおいて、現在のstatusの次のindexのstatusをnewStatusとする
+    const newStatus = statuses[(statuses.indexOf(status) + 1) % 3];
+    updateDoc(doc(db, 'todos', id), {
+      status: newStatus,
       update: serverTimestamp(),
     });
   };
@@ -338,11 +348,16 @@ const Top: React.FC = () => {
                 return (
                   <Tr key={todo.id}>
                     <Td textAlign="left" pl="10px">
-                      {todo.task}
+                      <Button
+                        variant="link"
+                        onClick={() => router.push(`${todo.id}/detail`)}
+                      >
+                        {todo.task}
+                      </Button>
                     </Td>
                     <Td textAlign="center">{todo.author}</Td>
                     <Td textAlign="center">
-                      <Box
+                      <Button
                         w="120px"
                         h="40px"
                         lineHeight="40px"
@@ -359,9 +374,12 @@ const Top: React.FC = () => {
                             ? 'green.50'
                             : 'blackAlpha.800'
                         }
+                        onClick={(e) =>
+                          handleClickStatus(e, todo.id, todo.status)
+                        }
                       >
                         <Text>{todo.status}</Text>
-                      </Box>
+                      </Button>
                     </Td>
                     <Td textAlign="center">
                       <Select

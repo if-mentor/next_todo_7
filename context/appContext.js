@@ -8,14 +8,7 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { useRouter } from 'next/router';
-
 import { auth } from '../firebase/firebase';
-
-// type GlobalState = {
-//   user: any;
-//   isLoading: boolean;
-//   error: any;
-// };
 
 export const AppContext = createContext({
   user: { displayName: '' },
@@ -32,13 +25,10 @@ export const useAppContext = () => {
 
 export const AppContextProvider = ({ children }) => {
   const router = useRouter();
-
   const [user, setUser] = useState(null);
-  // const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // setLoading(true);
     const unsubscribe = onAuthStateChanged(auth, (res) => {
       if (res) {
         setUser(res);
@@ -46,13 +36,11 @@ export const AppContextProvider = ({ children }) => {
         setUser(null);
       }
       setError('');
-      // setLoading(false);
     });
     return unsubscribe;
   }, []);
 
   const registerUser = (email, password, name) => {
-    // setLoading(true);
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         return updateProfile(auth.currentUser, {
@@ -60,25 +48,20 @@ export const AppContextProvider = ({ children }) => {
         });
       })
       .then((res) => {
-        // setLoading(false);
         router.push('/top');
       })
       .catch((err) => {
         alert(`Sign-up is failed. Error:${err.message}`);
-        // setLoading(false);
       });
   };
 
   const signInUser = (email, password) => {
-    // setLoading(true);
     signInWithEmailAndPassword(auth, email, password)
       .then((res) => {
-        // setLoading(false);
         router.push('/top');
       })
       .catch((err) => {
         alert(`Login is failed. Error:${err.message}`);
-        // setLoading(false);
       });
   };
 
@@ -92,7 +75,6 @@ export const AppContextProvider = ({ children }) => {
 
   const contextValue = {
     user,
-    // loading,
     error,
     signInUser,
     registerUser,
