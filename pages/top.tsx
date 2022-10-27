@@ -339,9 +339,7 @@ const Top: React.FC = () => {
                     <Td textAlign="left" pl="10px">
                       {todo.task}
                     </Td>
-                    <Td textAlign="left" pl="10px">
-                      {todo.author}
-                    </Td>
+                    <Td textAlign="center">{todo.author}</Td>
                     <Td textAlign="center">
                       <Box
                         w="120px"
