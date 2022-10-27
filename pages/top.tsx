@@ -285,7 +285,7 @@ const Top: React.FC = () => {
                   fontSize="24px"
                   color="blackAlpha.800"
                   textTransform="none"
-                  textAlign="left"
+                  textAlign="center"
                   p="0 0 0 10px"
                   minW="100px"
                 >
@@ -362,6 +362,7 @@ const Top: React.FC = () => {
                         h="40px"
                         lineHeight="40px"
                         borderRadius="50px"
+                        m="0 auto"
                         bg={
                           todo.status === 'DOING'
                             ? 'green.600'

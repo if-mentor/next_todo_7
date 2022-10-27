@@ -25,15 +25,14 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
-import { useRecoilValue } from 'recoil';
-import { userState } from '../Atoms/userAtom';
 import { Todo } from './top';
 import parseTimestampToDate from '../utils/parseTimestampToDate';
 import ConfirmationDialog from '../components/ConfirmationDialog';
+import { useAppContext } from '../context/appContext';
 
 const Trash = () => {
   const router = useRouter();
-  const uid = useRecoilValue(userState).uid;
+  const { user } = useAppContext();
   const [deleteOrRestoreTodoId, setDeleteOrRestoreTodoId] =
     useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,12 +42,10 @@ const Trash = () => {
   const toast = useToast();
 
   //ログイン確認
-  useEffect(() => {
-    if (!uid) {
-      router.push('/login');
-    }
+  React.useEffect(() => {
+    !!user || router.push('/login');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   //レンダリング時にDBからTrashデータ取得
   useEffect(() => {
@@ -102,7 +99,7 @@ const Trash = () => {
 
   return (
     <>
-      <Container p="110px 100px 0" w="100%" maxW="1400px">
+      <Container p="110px 100px 0" w="100%" maxW="1200px">
         <Flex justify="space-between">
           <Text
             fontSize="28px"
@@ -241,6 +238,7 @@ const Trash = () => {
                               : 'blackAlpha.800'
                           }
                           fontWeight="bold"
+                          m="0 auto"
                         >
                           <Text>{todo.status}</Text>
                         </Box>
