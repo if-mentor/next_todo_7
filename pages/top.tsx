@@ -40,6 +40,7 @@ import parseTimestampToDate from '../utils/parseTimestampToDate';
 
 export type Todo = {
   id: string;
+  author: string;
   task: string;
   status: 'NOT STARTED' | 'DOING' | 'DONE';
   priority: 'High' | 'Middle' | 'Low';
@@ -163,6 +164,7 @@ const Top: React.FC = () => {
     const unsubscribe = onSnapshot(getTodos, (querySnapshot) => {
       const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
         id: doc.id,
+        author: doc.data().author,
         task: doc.data().task,
         status: doc.data().status,
         priority: doc.data().priority,
@@ -272,6 +274,16 @@ const Top: React.FC = () => {
                   fontSize="24px"
                   color="blackAlpha.800"
                   textTransform="none"
+                  textAlign="left"
+                  p="0 0 0 10px"
+                  minW="100px"
+                >
+                  User
+                </Th>
+                <Th
+                  fontSize="24px"
+                  color="blackAlpha.800"
+                  textTransform="none"
                   textAlign="center"
                   p="0"
                   minW="100px"
@@ -326,6 +338,9 @@ const Top: React.FC = () => {
                   <Tr key={todo.id}>
                     <Td textAlign="left" pl="10px">
                       {todo.task}
+                    </Td>
+                    <Td textAlign="left" pl="10px">
+                      {todo.author}
                     </Td>
                     <Td textAlign="center">
                       <Box

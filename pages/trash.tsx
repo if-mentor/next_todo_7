@@ -58,7 +58,7 @@ const Trash = () => {
     const getTodosQuery = query(
       collection(db, 'todos'),
       where('category', '==', 'trash'),
-      // where('author', '==', uid), // 自分のTodoのみ表示させる場合はこの行を追加
+      where('author', '==', uid), // 自分のTodoのみ表示させる場合はこの行を追加
       orderBy('create', 'desc')
     );
     const unsubscribe = onSnapshot(getTodosQuery, (querySnapshot) => {
