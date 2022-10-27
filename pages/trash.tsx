@@ -33,75 +33,6 @@ import { userState } from '../Atoms/userAtom';
 import { Todo } from './top';
 import parseTimestampToDate from '../utils/parseTimestampToDate';
 import ConfirmationDialog from '../components/ConfirmationDialog';
-// import useDeleteRestore from '../hooks/useDeleteRestore';
-
-//単一削除
-export const handleDeleteData: (id: string, toast) => void = async (
-  id,
-  toast
-) => {
-  await deleteDoc(doc(db, 'todos', id));
-  await toast({
-    title: 'Todo Deleted.',
-    status: 'success',
-    duration: 9000,
-    isClosable: true,
-  });
-};
-
-// 一括削除
-export const handleDeleteAllData: (todos: Todo[], toast) => void = async (
-  todos,
-  toast
-) => {
-  if (todos === null) return;
-  todos.map(async ({ id }) => {
-    await deleteDoc(doc(db, 'todos', id));
-  });
-  await toast({
-    title: 'All Todos Deleted.',
-    status: 'success',
-    duration: 9000,
-    isClosable: true,
-  });
-};
-
-//単一リストア
-export const handleRestoreData: (id: string, toast) => void = async (
-  id,
-  toast
-) => {
-  await updateDoc(doc(db, 'todos', id), {
-    category: 'top',
-  });
-  await toast({
-    title: 'Todo Restored.',
-    status: 'success',
-    duration: 9000,
-    isClosable: true,
-  });
-};
-
-// 一括リストア
-export const handleRestoreAllData: (todos: Todo[], toast) => void = async (
-  todos,
-  toast
-) => {
-  if (todos === null) return;
-  todos.map(async ({ id }) => {
-    await updateDoc(doc(db, 'todos', id), {
-      category: 'top',
-    }).catch((err) => {
-      alert(err.message);
-    });
-  });
-  await toast({
-    title: 'All Todos Restored.',
-    status: 'success',
-    duration: 9000,
-    isClosable: true,
-  });
-};
 
 const Trash = () => {
   const router = useRouter();
@@ -170,19 +101,6 @@ const Trash = () => {
         break;
     }
   };
-
-  // //単一リストア
-  // const handleRestoreData: (id: string, toast) => void = async (id, toast) => {
-  //   await updateDoc(doc(db, 'todos', id), {
-  //     category: 'top',
-  //   });
-  //   await toast({
-  //     title: 'Todo Restored.',
-  //     status: 'success',
-  //     duration: 9000,
-  //     isClosable: true,
-  //   });
-  // };
 
   return (
     <>
@@ -379,9 +297,6 @@ const Trash = () => {
                             fontSize="18px"
                             fontWeight="bold"
                             p="0"
-                            // onClick={() => {
-                            //   handleRestoreData(todo.id, toast);
-                            // }}
                             onClick={() =>
                               deleteOrRestoreConfirmation(
                                 'UNIT_RESTORE',

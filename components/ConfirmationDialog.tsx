@@ -9,10 +9,10 @@ import {
   Button,
   useToast,
 } from '@chakra-ui/react';
-import { handleDeleteData } from '../pages/trash';
-import { handleDeleteAllData } from '../pages/trash';
-import { handleRestoreData } from '../pages/trash';
-import { handleRestoreAllData } from '../pages/trash';
+import { handleDeleteData } from '../utils/delete0rRestore';
+import { handleDeleteAllData } from '../utils/delete0rRestore';
+import { handleRestoreData } from '../utils/delete0rRestore';
+import { handleRestoreAllData } from '../utils/delete0rRestore';
 import { Todo } from '../pages/top';
 
 type Props = {
@@ -36,6 +36,7 @@ const ConfirmationDialog: FC<Props> = (props) => {
   } = props;
   const toast = useToast();
 
+  //Dialog内のコメントセット
   useEffect(() => {
     switch (dialogText) {
       case 'UNIT_DELETE':
@@ -52,6 +53,7 @@ const ConfirmationDialog: FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialogText]);
 
+  //Dialog内ボタンの削除・リストアハンドラー
   const handlerDeleteOrRestore = (deleteOrRestoreTodoId: string) => {
     switch (dialogText) {
       case 'UNIT_DELETE':
@@ -72,6 +74,7 @@ const ConfirmationDialog: FC<Props> = (props) => {
     }
     onClose();
   };
+
   return (
     <AlertDialog
       isOpen={isOpen}
@@ -82,7 +85,6 @@ const ConfirmationDialog: FC<Props> = (props) => {
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             {dialogTitle[0]}
-            {/* {dialogText === 'UNIT_DELETE' ? 'Delete Todo' : 'Delete All Todos'} */}
           </AlertDialogHeader>
 
           <AlertDialogBody>
@@ -95,10 +97,6 @@ const ConfirmationDialog: FC<Props> = (props) => {
             </Button>
             <Button
               colorScheme="red"
-              //複数処理のときは、アローの後を｛関数A,関数B｝にする
-              // onClick={() => {
-              //   onClick(), onClose();
-              // }}
               onClick={() => handlerDeleteOrRestore(deleteOrRestoreTodoId)}
               ml={3}
             >
