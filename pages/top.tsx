@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -40,12 +40,12 @@ import parseTimestampToDate from '../utils/parseTimestampToDate';
 
 export type Todo = {
   id: string;
-  author: string;
+  author?: string;
   task: string;
   status: 'NOT STARTED' | 'DOING' | 'DONE';
   priority: 'High' | 'Middle' | 'Low';
   create_date: Timestamp;
-  update_date?: Timestamp | null;
+  update_date: Timestamp | null;
 };
 
 type FilterQuery = {
@@ -69,6 +69,7 @@ const Top: React.FC = () => {
 
   React.useEffect(() => {
     !!user || router.push('/login');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const filteredTodos: Todo[] = useMemo(() => {
@@ -179,7 +180,7 @@ const Top: React.FC = () => {
   return (
     <>
       <Header />
-      <Container p="110px 100px 0" w="100%" maxW="1200px">
+      <Container p="110px 100px 0" w="100%" maxW="1400px">
         <Box pb="15px">
           <Text
             fontSize="28px"

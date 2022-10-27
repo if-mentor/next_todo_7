@@ -32,7 +32,7 @@ type FormValues = {
 // top:TOPページ、draft:DRAFTページ、trash:trashページにそれぞれ表示
 type Category = 'top' | 'draft' | 'trash';
 
-const create: React.FC = () => {
+const Create: React.FC = () => {
   const {
     handleSubmit,
     register,
@@ -196,4 +196,4 @@ const create: React.FC = () => {
   );
 };
 
-export default create;
+export default Create;

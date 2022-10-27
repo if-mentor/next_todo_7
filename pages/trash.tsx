@@ -19,15 +19,12 @@ import {
 } from '@chakra-ui/react';
 import {
   collection,
-  deleteDoc,
-  doc,
   onSnapshot,
   orderBy,
   query,
-  updateDoc,
   where,
 } from 'firebase/firestore';
-import { auth, db } from '../firebase/firebase';
+import { db } from '../firebase/firebase';
 import { useRecoilValue } from 'recoil';
 import { userState } from '../Atoms/userAtom';
 import { Todo } from './top';
@@ -58,7 +55,7 @@ const Trash = () => {
     const getTodosQuery = query(
       collection(db, 'todos'),
       where('category', '==', 'trash'),
-      where('author', '==', uid), // 自分のTodoのみ表示させる場合はこの行を追加
+      // where('author', '==', uid), // 自分のTodoのみ表示させる場合はこの行を追加
       orderBy('create', 'desc')
     );
     const unsubscribe = onSnapshot(getTodosQuery, (querySnapshot) => {
@@ -68,6 +65,7 @@ const Trash = () => {
         status: doc.data().status,
         priority: doc.data().priority,
         create_date: doc.data().create,
+        update_date: doc.data().update,
       }));
       setTodos(getTodos);
     });
@@ -104,7 +102,7 @@ const Trash = () => {
 
   return (
     <>
-      <Container p="110px 100px 0" w="100%" maxW="1200px">
+      <Container p="110px 100px 0" w="100%" maxW="1400px">
         <Flex justify="space-between">
           <Text
             fontSize="28px"
