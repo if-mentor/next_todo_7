@@ -43,12 +43,14 @@ const ConfirmationDialog: FC<Props> = (props) => {
   const handlerDeleteOrRestore = (deleteTodoId: string) => {
     switch (dialogText) {
       case 'UNIT_DELETE':
-        console.log(deleteTodoId);
         handleDeleteData(deleteTodoId);
+        break;
       case 'ALL_DELETE':
         handleDeleteAllData(todos);
+        break;
       case 'ALL_RESTORE':
         handleRestoreAllData(todos);
+        break;
       default:
         break;
     }

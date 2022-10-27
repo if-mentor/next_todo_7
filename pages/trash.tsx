@@ -36,7 +36,6 @@ import ConfirmationDialog from '../components/ConfirmationDialog';
 
 //単一削除
 export const handleDeleteData: (id: string) => void = async (id) => {
-  console.log('del func');
   await deleteDoc(doc(db, 'todos', id)).then(() =>
     alert('データが削除されました')
   );
