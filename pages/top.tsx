@@ -384,7 +384,7 @@ const Top: React.FC = () => {
                         <Text>{todo.status}</Text>
                       </Button>
                     </Td>
-                    <Td textAlign="center">
+                    <Td textAlign="center" p={0}>
                       <Select
                         defaultValue={todo.priority}
                         onChange={(e) => handleChangePriority(e, todo.id)}
