@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import Pagination from "../components/Pagination";
+import { paginate } from "./../utils/paginate";
 import {
   Box,
   Container,
@@ -25,6 +27,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
+import { Header } from '../components/Header';
 import { Todo } from './top';
 import parseTimestampToDate from '../utils/parseTimestampToDate';
 import ConfirmationDialog from '../components/ConfirmationDialog';
@@ -70,6 +73,13 @@ const Trash = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  }
+  const paginatePosts = paginate(todos, currentPage, pageSize);
+
   //一括リストア・単一削除・一括削除の確認Dialogハンドラー
   const deleteOrRestoreConfirmation: (action: string, id: string) => void = (
     action,
@@ -99,6 +109,7 @@ const Trash = () => {
 
   return (
     <>
+      <Header />
       <Container p="110px 100px 0" w="100%" maxW="1200px">
         <Flex justify="space-between">
           <Text
@@ -211,7 +222,7 @@ const Trash = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {todos.map((todo) => {
+              {paginatePosts.map((todo) => {
                 return (
                   <>
                     <Tr key={todo.id}>
@@ -319,38 +330,11 @@ const Trash = () => {
             </Tbody>
           </Table>
         </TableContainer>
-        <HStack justify="center" align="center">
-          <Box sx={pagenation}>＜</Box>
-          <Box sx={pagenation}>1</Box>
-          <Box sx={pagenation}>2</Box>
-          <Box sx={pagenation}>...</Box>
-          <Box sx={pagenation}>5</Box>
-          <Box sx={pagenation}>6</Box>
-          <Box sx={pagenation}>＞</Box>
-        </HStack>
+        <Pagination items={todos.length} currentPage={currentPage} pageSize={pageSize} onPageChange={handlePageChange}/>
       </Container>
     </>
   );
 };
 
-const filterBox = {
-  w: '100%',
-  minW: '120px',
-};
-const filterTitle = {
-  fontWeight: '700',
-  fontSize: '18px',
-  lineHeight: '22px',
-};
-const pagenation = {
-  w: '40px',
-  h: '40px',
-  lineHeight: '40px',
-  textAlign: 'center',
-  borderRadius: '10px',
-  border: '1px solid rgba(0, 0, 0, 0.8)',
-  fontSize: '18px',
-  color: 'blackAlpha.800',
-};
 
 export default Trash;
