@@ -408,9 +408,11 @@ const Top: React.FC = () => {
                         <button onClick={() => router.push(`${todo.id}/edit`)}>
                           <Image src="Edit.png" />
                         </button>
-                        <button onClick={() => trashTodo(todo.id)}>
-                          <Image src="Trash.png" />
-                        </button>
+                        {todo.author === user.displayName && (
+                          <button onClick={() => trashTodo(todo.id)}>
+                            <Image src="Trash.png" />
+                          </button>
+                        )}
                       </HStack>
                     </Td>
                   </Tr>

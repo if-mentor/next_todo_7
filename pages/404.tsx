@@ -1,7 +1,9 @@
 import React from 'react'
 import { Button, Center } from '@chakra-ui/react'
+import {useRouter} from "next/router"
 
 const Page404 = () => {
+  const router=useRouter();
   return (
     <>
       <Center marginTop={12} color={'blackAlpha.800'} fontSize={'6xl'} fontWeight={700}>
@@ -11,7 +13,7 @@ const Page404 = () => {
         This  is not the web page you are looking for.
       </Center>
       <Center>
-        <Button width={28} height={10} bg={'rgba(254, 215, 226, 0.73)'} size='lg' borderRadius={'full'} border={'1px'} mx={'auto'} borderColor={'blackAlpha.800'}>
+        <Button width={28} height={10} bg={'rgba(254, 215, 226, 0.73)'} size='lg' borderRadius={'full'} border={'1px'} mx={'auto'} borderColor={'blackAlpha.800'} onClick={()=>router.push("/top")}>
           TOP
         </Button>
       </Center>

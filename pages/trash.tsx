@@ -15,7 +15,6 @@ import {
   Th,
   Td,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import {
   collection,
@@ -40,8 +39,8 @@ const Trash = () => {
   const cancelRef = useRef<HTMLButtonElement>();
   const [dialogText, setDialogText] = useState<string>("");
   const [todos, setTodos] = useState<Todo[]>([]);
-  const toast = useToast();
   const isLogin = useRecoilValue(loginState);
+  const { user } = useAppContext();
 
   //ログイン確認
   React.useEffect(() => {
@@ -53,7 +52,7 @@ const Trash = () => {
     const getTodosQuery = query(
       collection(db, "todos"),
       where("category", "==", "trash"),
-      // where('author', '==', uid), // 自分のTodoのみ表示させる場合はこの行を追加
+      where('author', '==', user.displayName), // 自分のTodoのみ表示させる場合はこの行を追加
       orderBy("create", "desc")
     );
     const unsubscribe = onSnapshot(getTodosQuery, (querySnapshot) => {
