@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useState } from "react";
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -18,8 +18,8 @@ import {
   Tr,
   Th,
   Td,
-} from "@chakra-ui/react";
-import { useRouter } from "next/router";
+} from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import {
   collection,
   onSnapshot,
@@ -38,31 +38,32 @@ import parseTimestampToDate from "../utils/parseTimestampToDate";
 import { useRecoilValue } from "recoil";
 import { loginState } from "../Atoms/userAtom";
 
-type Todo = {
+export type Todo = {
   id: string;
+  author?: string;
   task: string;
-  status: "NOT STARTED" | "DOING" | "DONE";
-  priority: "High" | "Middle" | "Low";
+  status: 'NOT STARTED' | 'DOING' | 'DONE';
+  priority: 'High' | 'Middle' | 'Low';
   create_date: Timestamp;
   update_date: Timestamp | null;
 };
 
 type FilterQuery = {
   task: string;
-  status: "" | "NOT STARTED" | "DOING" | "DONE";
-  priority: "" | "High" | "Middle" | "Low";
+  status: '' | 'NOT STARTED' | 'DOING' | 'DONE';
+  priority: '' | 'High' | 'Middle' | 'Low';
 };
 
 const Top: React.FC = () => {
   const router = useRouter();
   const [todos, setTodos] = useState<Todo[]>([]);
-  const statuses = ["NOT STARTED", "DOING", "DONE"];
-  const priorities = ["High", "Middle", "Low"];
+  const statuses = ['NOT STARTED', 'DOING', 'DONE'];
+  const priorities = ['High', 'Middle', 'Low'];
   const { user } = useAppContext();
   const [filterQuery, setFilterQuery] = useState<FilterQuery>({
-    task: "",
-    status: "",
-    priority: "",
+    task: '',
+    status: '',
+    priority: '',
   });
   const isLogin = useRecoilValue(loginState);
 
@@ -74,27 +75,27 @@ const Top: React.FC = () => {
     //Memo:...todosでやると配列のコピーになり、オブジェクトは参照になる
     let cloneTodos: Todo[] = todos.map((todo) => ({ ...todo }));
     const tmpTodos = cloneTodos.filter((row) => {
-      switch (Object.values(filterQuery).filter((n) => n === "").length) {
+      switch (Object.values(filterQuery).filter((n) => n === '').length) {
         case 3:
           return todos;
         case 2:
           if (
-            (filterQuery.priority !== "" &&
+            (filterQuery.priority !== '' &&
               filterQuery.priority === row.priority) ||
-            (filterQuery.status !== "" && filterQuery.status === row.status) ||
-            (filterQuery.task !== "" && row.task.includes(filterQuery.task))
+            (filterQuery.status !== '' && filterQuery.status === row.status) ||
+            (filterQuery.task !== '' && row.task.includes(filterQuery.task))
           ) {
             return row;
           }
         case 1:
           if (
-            (filterQuery.task == "" &&
+            (filterQuery.task == '' &&
               filterQuery.status === row.status &&
               filterQuery.priority === row.priority) ||
-            (filterQuery.status == "" &&
+            (filterQuery.status == '' &&
               row.task.includes(filterQuery.task) &&
               filterQuery.priority === row.priority) ||
-            (filterQuery.priority == "" &&
+            (filterQuery.priority == '' &&
               row.task.includes(filterQuery.task) &&
               filterQuery.status === row.status)
           ) {
@@ -126,15 +127,15 @@ const Top: React.FC = () => {
 
   const filterReset: () => void = () => {
     setFilterQuery({
-      task: "",
-      status: "",
-      priority: "",
+      task: '',
+      status: '',
+      priority: '',
     });
   };
 
   const trashTodo: (id: string) => void = async (id) => {
-    await updateDoc(doc(db, "todos", id), {
-      category: "trash",
+    await updateDoc(doc(db, 'todos', id), {
+      category: 'trash',
     });
     //trashしたtodoを削除したtodoリスト作成
     const trashedTodos: Todo[] = todos.filter((todo) => {
@@ -147,7 +148,7 @@ const Top: React.FC = () => {
     e: React.ChangeEvent<HTMLSelectElement>,
     id: string
   ) => void = (e, id) => {
-    updateDoc(doc(db, "todos", id), {
+    updateDoc(doc(db, 'todos', id), {
       priority: e.target.value,
       update: serverTimestamp(),
     });
@@ -160,7 +161,7 @@ const Top: React.FC = () => {
   ) => void = (e, id, status) => {
     //  statusesリストにおいて、現在のstatusの次のindexのstatusをnewStatusとする
     const newStatus = statuses[(statuses.indexOf(status) + 1) % 3];
-    updateDoc(doc(db, "todos", id), {
+    updateDoc(doc(db, 'todos', id), {
       status: newStatus,
       update: serverTimestamp(),
     });
@@ -168,14 +169,15 @@ const Top: React.FC = () => {
 
   React.useEffect(() => {
     const getTodos = query(
-      collection(db, "todos"),
-      where("category", "==", "top"),
+      collection(db, 'todos'),
+      where('category', '==', 'top'),
       // where("author", "==", uid), // 自分のTodoのみ表示させる場合はこの行を追加
-      orderBy("create", "desc")
+      orderBy('create', 'desc')
     );
     const unsubscribe = onSnapshot(getTodos, (querySnapshot) => {
       const initialTodos: Todo[] = querySnapshot.docs.map((doc) => ({
         id: doc.id,
+        author: doc.data().author,
         task: doc.data().task,
         status: doc.data().status,
         priority: doc.data().priority,
@@ -190,7 +192,7 @@ const Top: React.FC = () => {
   return (
     <>
       <Header />
-      <Container p="110px 100px 0" w="100%" maxW="1080px">
+      <Container p="110px 100px 0" w="100%" maxW="1400px">
         <Box pb="15px">
           <Text
             fontSize="28px"
@@ -256,13 +258,13 @@ const Top: React.FC = () => {
           </HStack>
           <Spacer />
           <HStack spacing="16px">
-            <button onClick={() => router.push("/trash")}>
+            <button onClick={() => router.push('/trash')}>
               <Image src="Trash Icon Button.png" />
             </button>
             {/* <button>
               <Image src="Draft Icon Button.png" />
             </button> */}
-            <button onClick={() => router.push("/create")}>
+            <button onClick={() => router.push('/create')}>
               <Image src="New Icon Button.png" _hover={{ opacity: 0.8 }} />
             </button>
           </HStack>
@@ -280,6 +282,16 @@ const Top: React.FC = () => {
                   minW="100px"
                 >
                   Task
+                </Th>
+                <Th
+                  fontSize="24px"
+                  color="blackAlpha.800"
+                  textTransform="none"
+                  textAlign="center"
+                  p="0 0 0 10px"
+                  minW="100px"
+                >
+                  User
                 </Th>
                 <Th
                   fontSize="24px"
@@ -345,23 +357,25 @@ const Top: React.FC = () => {
                         {todo.task}
                       </Button>
                     </Td>
+                    <Td textAlign="center">{todo.author}</Td>
                     <Td textAlign="center">
                       <Button
                         w="120px"
                         h="40px"
                         lineHeight="40px"
                         borderRadius="50px"
+                        m="0 auto"
                         bg={
-                          todo.status === "DOING"
-                            ? "green.600"
-                            : todo.status === "DONE"
-                            ? "green.300"
-                            : "green.50"
+                          todo.status === 'DOING'
+                            ? 'green.600'
+                            : todo.status === 'DONE'
+                            ? 'green.300'
+                            : 'green.50'
                         }
                         color={
-                          todo.status === "DOING"
-                            ? "green.50"
-                            : "blackAlpha.800"
+                          todo.status === 'DOING'
+                            ? 'green.50'
+                            : 'blackAlpha.800'
                         }
                         onClick={(e) =>
                           handleClickStatus(e, todo.id, todo.status)
@@ -383,10 +397,10 @@ const Top: React.FC = () => {
                       </Select>
                     </Td>
                     <Td fontSize="14px" textAlign="center">
-                      {parseTimestampToDate(todo.create_date, "-")}
+                      {parseTimestampToDate(todo.create_date, '-')}
                     </Td>
                     <Td fontSize="14px" textAlign="center">
-                      {parseTimestampToDate(todo.update_date, "-") || "-"}
+                      {parseTimestampToDate(todo.update_date, '-') || '-'}
                     </Td>
                     <Td>
                       <HStack spacing="16px" justify="center">
@@ -420,23 +434,23 @@ const Top: React.FC = () => {
 };
 
 const filterBox = {
-  w: "100%",
-  minW: "120px",
+  w: '100%',
+  minW: '120px',
 };
 const filterTitle = {
-  fontWeight: "700",
-  fontSize: "18px",
-  lineHeight: "22px",
+  fontWeight: '700',
+  fontSize: '18px',
+  lineHeight: '22px',
 };
 const pagenation = {
-  w: "40px",
-  h: "40px",
-  lineHeight: "40px",
-  textAlign: "center",
-  borderRadius: "10px",
-  border: "1px solid rgba(0, 0, 0, 0.8)",
-  fontSize: "18px",
-  color: "blackAlpha.800",
+  w: '40px',
+  h: '40px',
+  lineHeight: '40px',
+  textAlign: 'center',
+  borderRadius: '10px',
+  border: '1px solid rgba(0, 0, 0, 0.8)',
+  fontSize: '18px',
+  color: 'blackAlpha.800',
 };
 
 export default Top;

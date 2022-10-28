@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from 'react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -6,12 +6,12 @@ import {
   signOut,
   updateProfile,
   sendPasswordResetEmail,
-} from "firebase/auth";
-import { useRouter } from "next/router";
-import { auth } from "../firebase/firebase";
+} from 'firebase/auth';
+import { useRouter } from 'next/router';
+import { auth } from '../firebase/firebase';
 
 export const AppContext = createContext({
-  user: { displayName: "" },
+  user: { displayName: '' },
   error: null,
   signInUser: () => {},
   registerUser: () => {},
@@ -26,7 +26,7 @@ export const useAppContext = () => {
 export const AppContextProvider = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (res) => {
@@ -35,7 +35,7 @@ export const AppContextProvider = ({ children }) => {
       } else {
         setUser(null);
       }
-      setError("");
+      setError('');
     });
     return unsubscribe;
   }, []);
