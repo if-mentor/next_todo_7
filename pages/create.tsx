@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Container,
   Heading,
@@ -15,68 +15,68 @@ import {
   FormLabel,
   FormControl,
   Box,
-} from "@chakra-ui/react";
-import Head from "next/head";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { Header } from "../components/Header";
-import { useRouter } from "next/router";
-import { db } from "../firebase/firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { useRecoilValue } from "recoil";
-import { userState } from "../Atoms/userAtom";
+} from '@chakra-ui/react';
+import Head from 'next/head';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { Header } from '../components/Header';
+import { useRouter } from 'next/router';
+import { db } from '../firebase/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { useAppContext } from '../context/appContext';
 
 type FormValues = {
   title: string;
   detail: string | null;
-  priority:  'High' | 'Middle' | 'Low';
+  priority: 'High' | 'Middle' | 'Low';
 };
 // top:TOPページ、draft:DRAFTページ、trash:trashページにそれぞれ表示
-type Category = "top" | "draft" | "trash";
+type Category = 'top' | 'draft' | 'trash';
 
-const create: React.FC = () => {
+const Create: React.FC = () => {
   const {
     handleSubmit,
     register,
     control,
     formState: { errors },
   } = useForm<FormValues>();
-  // const [category, setCategory] = React.useState<Category>("top");
   const router = useRouter();
-  const uid = useRecoilValue(userState).uid;
+  const { user } = useAppContext();
 
-  // validationは適当です。適宜変更してください。
+  React.useEffect(() => {
+    !!user || router.push('/login');
+  }, [user]);
+
   const validationRules = {
     title: {
-      required: "Title is required",
+      required: 'Title is required',
       maxLength: {
         value: 100,
-        message: "Please enter a title in 100 characters or less.",
+        message: 'Please enter a title in 100 characters or less.',
       },
     },
     detail: {
       maxLength: {
         value: 200,
-        message: "Please enter details in 200 characters or less.",
+        message: 'Please enter details in 200 characters or less.',
       },
     },
   };
 
   const onSubmit: SubmitHandler<FormValues> = (values: FormValues) => {
     const firestoreSubmit = async () => {
-      await addDoc(collection(db, "todos"), {
+      await addDoc(collection(db, 'todos'), {
         task: values.title,
         detail: values.detail,
-        status: "NOT STARTED",
+        status: 'NOT STARTED',
         priority: values.priority || 'Middle', // 一度もpriorityを変更していない場合値が入れないため調節
         create: serverTimestamp(),
-        update: null,
-        author: uid, 
-        category: "top",
+        update: serverTimestamp(),
+        author: user.displayName,
+        category: 'top',
       });
     };
     firestoreSubmit();
-    // 少し時間をおかないとcreateのタイムスタンプが生成されていないようなので追加しました
-    setTimeout(()=>{router.push("/top")},1000) 
+    router.push('/top');
   };
 
   return (
@@ -87,7 +87,7 @@ const create: React.FC = () => {
         <Flex justify="space-between" align="center">
           <Heading as="h1">NEW TODO</Heading>
           <Button
-            onClick={() => router.push("/top")}
+            onClick={() => router.push('/top')}
             bg="green.300"
             rounded="full"
             shadow="md"
@@ -114,7 +114,7 @@ const create: React.FC = () => {
                 <Input
                   id="title"
                   placeholder="title"
-                  {...register("title", validationRules.title)}
+                  {...register('title', validationRules.title)}
                 />
                 <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
               </FormControl>
@@ -125,7 +125,7 @@ const create: React.FC = () => {
                 <Textarea
                   id="detail"
                   placeholder="detail"
-                  {...register("detail", validationRules.detail)}
+                  {...register('detail', validationRules.detail)}
                 />
                 <FormErrorMessage>{errors.detail?.message}</FormErrorMessage>
               </FormControl>
@@ -194,4 +194,4 @@ const create: React.FC = () => {
   );
 };
 
-export default create;
+export default Create;

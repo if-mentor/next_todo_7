@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import Pagination from "../components/Pagination";
 import { paginate } from "./../utils/paginate";
 import {
@@ -15,49 +16,101 @@ import {
   Tr,
   Th,
   Td,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
-
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { Header } from '../components/Header';
+import { Todo } from './top';
+import parseTimestampToDate from '../utils/parseTimestampToDate';
+import ConfirmationDialog from '../components/ConfirmationDialog';
+import { useAppContext } from '../context/appContext';
 
 const Trash = () => {
-  type Todo = {
-    id: number;
-    task: string;
-    status: 'NOT STARTED' | 'DOING' | 'DONE';
-    priority: 'High' | 'Middle' | 'Low';
-    create_date: string; //TODO:Timestampに変更予定
-    update_date: string; //TODO:Timestampに変更予定
-  };
+  const router = useRouter();
+  const { user } = useAppContext();
+  const [deleteOrRestoreTodoId, setDeleteOrRestoreTodoId] =
+    useState<string>('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef<HTMLButtonElement>();
+  const [dialogText, setDialogText] = useState<string>('');
   const [todos, setTodos] = useState<Todo[]>([]);
+  const toast = useToast();
+
+  //ログイン確認
+  React.useEffect(() => {
+    !!user || router.push('/login');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  //レンダリング時にDBからTrashデータ取得
+  useEffect(() => {
+    const getTodosQuery = query(
+      collection(db, 'todos'),
+      where('category', '==', 'trash'),
+      // where('author', '==', uid), // 自分のTodoのみ表示させる場合はこの行を追加
+      orderBy('create', 'desc')
+    );
+    const unsubscribe = onSnapshot(getTodosQuery, (querySnapshot) => {
+      const getTodos: Todo[] = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        task: doc.data().task,
+        status: doc.data().status,
+        priority: doc.data().priority,
+        create_date: doc.data().create,
+        update_date: doc.data().update,
+      }));
+      setTodos(getTodos);
+    });
+    return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
-  
-  useEffect(()=>{
-    const getPosts = () =>{
-      const arr: Todo[] = [];
-      for(let num=1;num<=100;num++){
-        arr.push(
-          {
-            id: num,
-            task: 'test' + String(num),
-            status: 'NOT STARTED',
-            priority: 'High',
-            create_date: '2020-11-8 18:55',
-            update_date: '2020-11-8 18:55',
-          })
-      }
-      setTodos(arr);
-    }
-    getPosts();
-  },[])
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   }
   const paginatePosts = paginate(todos, currentPage, pageSize);
 
+  //一括リストア・単一削除・一括削除の確認Dialogハンドラー
+  const deleteOrRestoreConfirmation: (action: string, id: string) => void = (
+    action,
+    id
+  ) => {
+    switch (action) {
+      case 'ALL_RESTORE':
+        setDialogText('ALL_RESTORE');
+        onOpen();
+        break;
+      case 'UNIT_DELETE':
+        setDeleteOrRestoreTodoId(id);
+        setDialogText('UNIT_DELETE');
+        onOpen();
+        break;
+      case 'UNIT_RESTORE':
+        setDeleteOrRestoreTodoId(id);
+        setDialogText('UNIT_RESTORE');
+        onOpen();
+        break;
+      case 'ALL_DELETE':
+        setDialogText('ALL_DELETE');
+        onOpen();
+        break;
+    }
+  };
+
   return (
     <>
-      <Container p="20px 100px 0" w="100%" maxW="auto">
+      <Header />
+      <Container p="110px 100px 0" w="100%" maxW="1200px">
         <Flex justify="space-between">
           <Text
             fontSize="28px"
@@ -77,6 +130,7 @@ const Trash = () => {
               borderRadius="3xl"
               fontSize="18px"
               fontWeight="bold"
+              onClick={() => deleteOrRestoreConfirmation('ALL_DELETE', '')}
             >
               Delete all
             </Button>
@@ -90,6 +144,7 @@ const Trash = () => {
               fontSize="18px"
               fontWeight="bold"
               ml="24px"
+              onClick={() => deleteOrRestoreConfirmation('ALL_RESTORE', '')}
             >
               Restore all
             </Button>
@@ -104,6 +159,7 @@ const Trash = () => {
               fontSize="18px"
               fontWeight="bold"
               ml="24px"
+              onClick={() => router.back()}
             >
               Back
             </Button>
@@ -168,73 +224,107 @@ const Trash = () => {
             <Tbody>
               {paginatePosts.map((todo) => {
                 return (
-                  <Tr key={todo.id}>
-                    <Td textAlign="left" pl="10px">
-                      {todo.task}
-                    </Td>
-                    <Td textAlign="center">
-                      <Box
-                        w="120px"
-                        h="40px"
+                  <>
+                    <Tr key={todo.id}>
+                      <Td textAlign="left" pl="10px">
+                        {todo.task}
+                      </Td>
+                      <Td textAlign="center">
+                        <Box
+                          w="120px"
+                          h="40px"
+                          lineHeight="40px"
+                          textAlign="center"
+                          borderRadius="50px"
+                          bg={
+                            todo.status === 'DOING'
+                              ? 'green.600'
+                              : todo.status === 'DONE'
+                              ? 'green.300'
+                              : 'green.50'
+                          }
+                          color={
+                            todo.status === 'DOING'
+                              ? 'green.50'
+                              : 'blackAlpha.800'
+                          }
+                          fontWeight="bold"
+                          m="0 auto"
+                        >
+                          <Text>{todo.status}</Text>
+                        </Box>
+                      </Td>
+                      <Td
+                        w="174px"
+                        h="56px"
+                        color="green.100"
+                        textAlign="center"
+                        fontSize="16px"
+                        letterSpacing="0.3em"
+                        fontWeight="medium"
                         lineHeight="40px"
-                        borderRadius="50px"
-                        bg="green.600"
-                        color="#F0FFF4"
-                        fontWeight="bold"
-                      >
-                        <Text>{todo.status}</Text>
-                      </Box>
-                    </Td>
-                    <Td
-                      w="174px"
-                      h="56px"
-                      color="green.100"
-                      textAlign="center"
-                      fontSize="16px"
-                      letterSpacing="0.3em"
-                      fontWeight="medium"
-                      lineHeight="40px"
-                      textShadow="1px 1px 0 black, -1px -1px 0 black,
+                        textShadow="1px 1px 0 black, -1px -1px 0 black,
 											-1px 1px 0 black, 1px -1px 0 black,
 											0px 1px 0 black,  0 -1px 0 black,
 											-1px 0 0 black, 1px 0 0 black;"
-                    >
-                      {todo.priority}
-                    </Td>
-                    <Td fontSize="14px" textAlign="center">
-                      {todo.create_date}
-                    </Td>
-                    <Td>
-                      <HStack spacing="16px" justify="center">
-                        <Button
-                          color="white"
-                          variant="outline"
-                          bgColor="red.500"
-                          w="80px"
-                          h="40px"
-                          borderRadius="3xl"
-                          fontSize="18px"
-                          fontWeight="bold"
-                          p="0"
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          color="white"
-                          variant="outline"
-                          bgColor="blue.300"
-                          w="80px"
-                          h="40px"
-                          borderRadius="3xl"
-                          fontSize="18px"
-                          fontWeight="bold"
-                          p="0"
-                        >
-                          Restore
-                        </Button>
-                      </HStack>
-                    </Td>
-                  </Tr>
+                      >
+                        {todo.priority}
+                      </Td>
+                      <Td fontSize="14px" textAlign="center">
+                        {parseTimestampToDate(todo.create_date, '-')}
+                      </Td>
+                      <Td>
+                        <HStack spacing="16px" justify="center">
+                          <Button
+                            color="white"
+                            variant="outline"
+                            bgColor="red.500"
+                            w="80px"
+                            h="40px"
+                            borderRadius="3xl"
+                            fontSize="18px"
+                            fontWeight="bold"
+                            p="0"
+                            onClick={() =>
+                              deleteOrRestoreConfirmation(
+                                'UNIT_DELETE',
+                                todo.id
+                              )
+                            }
+                          >
+                            Delete
+                          </Button>
+                          <Button
+                            color="white"
+                            variant="outline"
+                            bgColor="blue.300"
+                            w="80px"
+                            h="40px"
+                            borderRadius="3xl"
+                            fontSize="18px"
+                            fontWeight="bold"
+                            p="0"
+                            onClick={() =>
+                              deleteOrRestoreConfirmation(
+                                'UNIT_RESTORE',
+                                todo.id
+                              )
+                            }
+                          >
+                            Restore
+                          </Button>
+                        </HStack>
+                      </Td>
+                    </Tr>
+                    <ConfirmationDialog
+                      isOpen={isOpen}
+                      onClose={onClose}
+                      cancelRef={cancelRef}
+                      deleteOrRestoreTodoId={deleteOrRestoreTodoId}
+                      dialogText={dialogText}
+                      todos={todos}
+                    />
+                  </>
                 );
               })}
             </Tbody>
