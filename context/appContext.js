@@ -47,9 +47,6 @@ export const AppContextProvider = ({ children }) => {
           displayName: name,
         });
       })
-      .then((res) => {
-        router.push("/top");
-      })
       .catch((err) => {
         alert(`Sign-up is failed. Error:${err.message}`);
       });
@@ -57,9 +54,6 @@ export const AppContextProvider = ({ children }) => {
 
   const signInUser = (email, password) => {
     signInWithEmailAndPassword(auth, email, password)
-      .then((res) => {
-        router.push("/top");
-      })
       .catch((err) => {
         alert(`Login is failed. Error:${err.message}`);
       });

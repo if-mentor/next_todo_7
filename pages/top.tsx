@@ -35,6 +35,8 @@ import { db } from "../firebase/firebase";
 import { Header } from "../components/Header";
 import { useAppContext } from "../context/appContext";
 import parseTimestampToDate from "../utils/parseTimestampToDate";
+import { useRecoilValue } from "recoil";
+import { loginState } from "../Atoms/userAtom";
 
 type Todo = {
   id: string;
@@ -62,10 +64,11 @@ const Top: React.FC = () => {
     status: "",
     priority: "",
   });
+  const isLogin = useRecoilValue(loginState);
 
   React.useEffect(() => {
-    !!user || router.push("/login");
-  }, [user]);
+    !isLogin && router.push("/login");
+  }, [isLogin]);
 
   const filteredTodos: Todo[] = useMemo(() => {
     //Memo:...todosでやると配列のコピーになり、オブジェクトは参照になる
@@ -334,9 +337,12 @@ const Top: React.FC = () => {
               {filteredTodos.map((todo) => {
                 return (
                   <Tr key={todo.id}>
-                    <Td textAlign="left" pl="10px" >
-                      <Button variant="link" onClick={()=>router.push(`${todo.id}/detail`)}>
-                      {todo.task}
+                    <Td textAlign="left" pl="10px">
+                      <Button
+                        variant="link"
+                        onClick={() => router.push(`${todo.id}/detail`)}
+                      >
+                        {todo.task}
                       </Button>
                     </Td>
                     <Td textAlign="center">

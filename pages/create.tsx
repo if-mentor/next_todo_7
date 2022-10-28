@@ -23,6 +23,8 @@ import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useAppContext } from "../context/appContext";
+import { useRecoilValue } from "recoil";
+import { loginState } from "../Atoms/userAtom";
 
 type FormValues = {
   title: string;
@@ -41,10 +43,11 @@ const create: React.FC = () => {
   } = useForm<FormValues>();
   const router = useRouter();
   const { user } = useAppContext();
-
+  const isLogin = useRecoilValue(loginState);
+  
   React.useEffect(() => {
-    !!user || router.push("/login");
-  }, [user]);
+    !isLogin && router.push("/login"); 
+  }, [isLogin]);
 
   const validationRules = {
     title: {

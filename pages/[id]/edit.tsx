@@ -17,6 +17,8 @@ import {
 import { doc, DocumentData, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import parseTimestampToDate from "../../utils/parseTimestampToDate";
+import { useRecoilValue } from "recoil";
+import { loginState } from "../../Atoms/userAtom";
 
 const Edit = () => {
   const [editTodoId, setEditTodoId] = useState<string>('');
@@ -24,6 +26,11 @@ const Edit = () => {
   const [editTodo, setEditTodo] = useState<DocumentData>({ task: '' });
   const router = useRouter();
   const { isReady } = useRouter();
+  const isLogin = useRecoilValue(loginState);
+  
+  React.useEffect(() => {
+    !isLogin && router.push("/login"); 
+  }, [isLogin]);
 
   useEffect(() => {
     (async () => {

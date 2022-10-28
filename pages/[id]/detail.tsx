@@ -40,6 +40,8 @@ import parseTimestampToDate from "../../utils/parseTimestampToDate";
 import { Header } from "../../components/Header";
 import Head from "next/head";
 import { useAppContext } from "../../context/appContext";
+import { useRecoilValue } from "recoil";
+import { loginState } from "../../Atoms/userAtom";
 
 type CommentUser = {
   id: string;
@@ -63,10 +65,11 @@ const Detail = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const { user } = useAppContext();
+  const isLogin = useRecoilValue(loginState);
 
   React.useEffect(() => {
-    !!user || router.push("/login");
-  }, [user]);
+    !isLogin && router.push("/login");
+  }, [isLogin]);
 
   // todo取得
   useEffect(() => {
