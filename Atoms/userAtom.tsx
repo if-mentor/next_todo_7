@@ -6,5 +6,5 @@ type User = {
 
 export const userState: RecoilState<User> = atom({
 	key: "userState",
-	default: { uid: "" },
+	default: { uid: "uid" }, // TODO: login機能が実装できたらuidは空文字にすること
 });
