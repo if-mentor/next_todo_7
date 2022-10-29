@@ -1,4 +1,6 @@
 import React, { ChangeEvent, useMemo, useState } from 'react';
+import Pagination from "../components/Pagination";
+import { paginate } from "./../utils/paginate";
 import {
   Box,
   Container,
@@ -113,6 +115,13 @@ const Top: React.FC = () => {
     });
     return tmpTodos;
   }, [todos, filterQuery]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  }
+  const paginatePosts = paginate(filteredTodos, currentPage, pageSize);
 
   const handleFilter = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
@@ -344,7 +353,7 @@ const Top: React.FC = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredTodos.map((todo) => {
+              {paginatePosts.map((todo) => {
                 return (
                   <Tr key={todo.id}>
                     <Td textAlign="left" pl="10px">
@@ -417,15 +426,7 @@ const Top: React.FC = () => {
             </Tbody>
           </Table>
         </TableContainer>
-        <HStack justify="center" align="center">
-          <Box sx={pagenation}>＜</Box>
-          <Box sx={pagenation}>1</Box>
-          <Box sx={pagenation}>2</Box>
-          <Box sx={pagenation}>...</Box>
-          <Box sx={pagenation}>5</Box>
-          <Box sx={pagenation}>6</Box>
-          <Box sx={pagenation}>＞</Box>
-        </HStack>
+        <Pagination items={filteredTodos.length} currentPage={currentPage} pageSize={pageSize} onPageChange={handlePageChange}/>
       </Container>
     </>
   );
