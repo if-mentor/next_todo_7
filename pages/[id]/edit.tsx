@@ -14,22 +14,32 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { doc, DocumentData, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  DocumentData,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import parseTimestampToDate from "../../utils/parseTimestampToDate";
 import { useRecoilValue } from "recoil";
 import { loginState } from "../../Atoms/userAtom";
+import { useAppContext } from "../../context/appContext";
+import {Header} from "../../components/Header"
 
 const Edit = () => {
-  const [editTodoId, setEditTodoId] = useState<string>('');
+  const [editTodoId, setEditTodoId] = useState<string>("");
   // オブジェクトに値をいれておかないと controle と uncontrole で制御するのかしないのかわからないため警告が出る、一時的な回避
-  const [editTodo, setEditTodo] = useState<DocumentData>({ task: '' });
+  const [editTodo, setEditTodo] = useState<DocumentData>({ task: "" });
   const router = useRouter();
   const { isReady } = useRouter();
+  const { user } = useAppContext();
+  console.log("user", user)
   const isLogin = useRecoilValue(loginState);
-  
+
   React.useEffect(() => {
-    !isLogin && router.push("/login"); 
+    !isLogin && router.push("/login");
   }, [isLogin]);
 
   useEffect(() => {
@@ -38,13 +48,17 @@ const Edit = () => {
         const docRef = doc(db, "todos", `${router.query.id}`);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setEditTodoId(docSnap.id);
-          setEditTodo(docSnap.data());
+          if (docSnap.data().author !== user?.displayName) {
+            router.push("/top");
+          }else{
+            setEditTodoId(docSnap.id);
+            setEditTodo(docSnap.data());
+          }
         } else {
           alert("ドキュメントを取得できませんでした。リロードしてください。");
         }
       }
-    })()
+    })();
   }, [isReady]);
 
   const onClickEditTodoSave = async () => {
@@ -54,15 +68,16 @@ const Edit = () => {
       detail: editTodo.detail,
       update: serverTimestamp(),
     });
-    router.push('/top');
-  }
+    router.push("/top");
+  };
 
   return (
     <>
       <Head>
         <title>todo team7 - Edit</title>
       </Head>
-      <Container mt="20px" p="0" w="85%" maxW="1080px">
+      <Header />
+      <Container p="120px" w="85%" maxW="1080px">
         <VStack>
           <Flex w="100%">
             <Text
@@ -85,7 +100,7 @@ const Edit = () => {
               borderWidth="1px"
               borderColor="blackAlpha.800"
               borderRadius="50px"
-              onClick={() => router.push('/top')}
+              onClick={() => router.back()}
             >
               Back
             </Button>
@@ -115,7 +130,9 @@ const Edit = () => {
                 borderRadius="10px"
                 type="Text"
                 value={editTodo?.task}
-                onChange={(e) => setEditTodo({ ...editTodo, task: e.target.value })}
+                onChange={(e) =>
+                  setEditTodo({ ...editTodo, task: e.target.value })
+                }
               />
               <FormErrorMessage></FormErrorMessage>
             </FormControl>
@@ -140,13 +157,13 @@ const Edit = () => {
                 borderColor="blackAlpha.800"
                 borderRadius="10px"
                 value={editTodo?.detail}
-                onChange={(e) => setEditTodo({ ...editTodo, detail: e.target.value })}
+                onChange={(e) =>
+                  setEditTodo({ ...editTodo, detail: e.target.value })
+                }
               />
             </FormControl>
 
-            <Flex
-              mt="16px"
-            >
+            <Flex mt="16px">
               <Flex direction="column">
                 <Text
                   fontSize="16px"
