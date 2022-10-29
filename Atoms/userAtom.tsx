@@ -1,10 +1,13 @@
-import { atom, RecoilState } from 'recoil';
+import { atom, RecoilState } from "recoil";
+import { recoilPersist } from "recoil-persist";
 
-type User = {
-  uid: string;
-};
+const { persistAtom } = recoilPersist({
+  key: "recoil-persist",
+  storage: typeof window === "undefined" ? undefined : sessionStorage,
+});
 
-export const userState: RecoilState<User> = atom({
-  key: 'userState',
-  default: { uid: 'uid' }, // TODO: login機能が実装できたらuidは空文字にすること
+export const loginState: RecoilState<Boolean> = atom({
+  key: "isLogin",
+  default: false,
+  effects_UNSTABLE: [persistAtom],
 });

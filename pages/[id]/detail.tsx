@@ -40,6 +40,8 @@ import parseTimestampToDate from "../../utils/parseTimestampToDate";
 import { Header } from "../../components/Header";
 import Head from "next/head";
 import { useAppContext } from "../../context/appContext";
+import { useRecoilValue } from "recoil";
+import { loginState } from "../../Atoms/userAtom";
 
 type CommentUser = {
   id: string;
@@ -63,10 +65,11 @@ const Detail = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const { user } = useAppContext();
+  const isLogin = useRecoilValue(loginState);
 
   React.useEffect(() => {
-    !!user || router.push("/login");
-  }, [user]);
+    !isLogin && router.push("/login");
+  }, [isLogin]);
 
   // todo取得
   useEffect(() => {
@@ -81,6 +84,7 @@ const Detail = () => {
             detail: docSnap.data().detail,
             create_date: docSnap.data().create,
             update_date: docSnap.data().update,
+            author: docSnap.data().author,
           });
         } else {
           alert("ドキュメントを取得できませんでした。リロードしてください。");
@@ -88,6 +92,8 @@ const Detail = () => {
       }
     })();
   }, [router.isReady]);
+
+  console.log("userdn", user?.displayName, todo.author);
 
   // コメントの取得
   useEffect(() => {
@@ -229,17 +235,19 @@ const Detail = () => {
               </Box>
             </Box>
             <Flex alignItems="center" mt="10px" p="0 20px">
-              <Button
-                color="black"
-                p="0 30px"
-                size="sm"
-                colorScheme="whatsapp"
-                borderRadius="20px"
-                onClick={() => router.push(`/${todo.id}/edit`)}
-              >
-                Edit
-                <EditIcon ml="3" />
-              </Button>
+              {todo.author === user?.displayName && (
+                <Button
+                  color="black"
+                  p="0 30px"
+                  size="sm"
+                  colorScheme="whatsapp"
+                  borderRadius="20px"
+                  onClick={() => router.push(`/${todo.id}/edit`)}
+                >
+                  Edit
+                  <EditIcon ml="3" />
+                </Button>
+              )}
               <Spacer />
               <Box className={styles.time} fontWeight="bold">
                 create

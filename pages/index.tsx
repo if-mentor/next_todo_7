@@ -7,11 +7,13 @@ import {
   VStack,
   FormControl,
   FormErrorMessage,
-} from '@chakra-ui/react';
-import { useRouter } from 'next/router';
-import { useForm } from 'react-hook-form';
-import { Header } from '../components/Header';
-import { useAppContext } from '../context/appContext';
+} from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+import { Header } from "../components/Header";
+import { useAppContext } from "../context/appContext";
+import { useRecoilState } from "recoil";
+import { loginState } from "../Atoms/userAtom";
 
 type FormValues = {
   email: string;
@@ -27,10 +29,11 @@ const loginPage = () => {
     trigger,
     register,
   } = useForm();
-  const { user, error, registerUser } = useAppContext();
+  const { registerUser } = useAppContext();
+  const [isLogin, setIsLogin] = useRecoilState(loginState);
 
   React.useEffect(() => {
-    !!user && router.push('/top');
+    isLogin && router.push("/top");
   }, []);
 
   const validationRules = {
@@ -67,6 +70,8 @@ const loginPage = () => {
 
   async function onSubmit(values: FormValues) {
     registerUser(values.email, values.password, values.name);
+    setIsLogin(true);
+    router.push("/top");
   }
 
   return (

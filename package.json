@@ -15,13 +15,16 @@
     "@chakra-ui/react": "^2.3.2",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@types/recoil": "^0.0.9",
     "firebase": "^9.10.0",
     "framer-motion": "^7.3.5",
     "lodash": "^4.17.21",
     "next": "12.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.37.0"
+    "react-hook-form": "^7.37.0",
+    "recoil": "^0.7.6",
+    "recoil-persist": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "18.7.18",

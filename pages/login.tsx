@@ -7,11 +7,13 @@ import {
   VStack,
   FormControl,
   FormErrorMessage,
-} from '@chakra-ui/react';
-import { useRouter } from 'next/router';
-import { useForm } from 'react-hook-form';
-import { Header } from '../components/Header';
-import { useAppContext } from '../context/appContext';
+} from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+import { Header } from "../components/Header";
+import { useAppContext } from "../context/appContext";
+import { useRecoilState } from "recoil";
+import { loginState } from "../Atoms/userAtom";
 
 type FormValues = {
   email: string;
@@ -28,9 +30,10 @@ const loginPage: React.FC = () => {
     register,
   } = useForm();
   const { user, signInUser } = useAppContext();
+  const [isLogin, setIsLogin] = useRecoilState(loginState);
 
   React.useEffect(() => {
-    !!user && router.push('/top');
+    isLogin && router.push("/top");
   }, []);
 
   const validationRules = {
@@ -56,6 +59,8 @@ const loginPage: React.FC = () => {
 
   async function onSubmit(values: FormValues) {
     await signInUser(values.email, values.password);
+    setIsLogin(true);
+    router.push("/top");
   }
 
   return (
@@ -84,7 +89,7 @@ const loginPage: React.FC = () => {
                   onKeyUp={() => {
                     trigger('email');
                   }}
-                  error={Boolean(errors.email)}
+                  // error={Boolean(errors.email)}
                 />
                 <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
               </FormControl>
@@ -99,7 +104,7 @@ const loginPage: React.FC = () => {
                   onKeyUp={() => {
                     trigger('password');
                   }}
-                  error={Boolean(errors.password)}
+                  // error={Boolean(errors.password)}
                 />
                 <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
               </FormControl>
