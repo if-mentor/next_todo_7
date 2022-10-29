@@ -55,26 +55,28 @@ const Trash = () => {
 
   //レンダリング時にDBからTrashデータ取得
   useEffect(() => {
-    const getTodosQuery = query(
-      collection(db, 'todos'),
-      where('category', '==', 'trash'),
-      where('author', '==', user.displayName), // 自分のTodoのみ表示させる場合はこの行を追加
-      orderBy('create', 'desc')
-    );
-    const unsubscribe = onSnapshot(getTodosQuery, (querySnapshot) => {
-      const getTodos: Todo[] = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        task: doc.data().task,
-        status: doc.data().status,
-        priority: doc.data().priority,
-        create_date: doc.data().create,
-        update_date: doc.data().update,
-      }));
-      setTodos(getTodos);
-    });
-    return () => unsubscribe();
+    if (user) {
+      const getTodosQuery = query(
+        collection(db, 'todos'),
+        where('category', '==', 'trash'),
+        where('author', '==', user.displayName), // 自分のTodoのみ表示させる場合はこの行を追加
+        orderBy('create', 'desc')
+      );
+      const unsubscribe = onSnapshot(getTodosQuery, (querySnapshot) => {
+        const getTodos: Todo[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          task: doc.data().task,
+          status: doc.data().status,
+          priority: doc.data().priority,
+          create_date: doc.data().create,
+          update_date: doc.data().update,
+        }));
+        setTodos(getTodos);
+      });
+      return () => unsubscribe();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
