@@ -1,4 +1,3 @@
-import { Toast } from '@chakra-ui/react';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { Todo } from '../pages/top';
