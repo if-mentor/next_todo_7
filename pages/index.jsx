@@ -15,13 +15,7 @@ import { useAppContext } from "../context/appContext";
 import { useRecoilState } from "recoil";
 import { loginState } from "../Atoms/userAtom";
 
-type FormValues = {
-  email: string;
-  password: string;
-  name: string;
-};
-
-const loginPage = () => {
+const LoginPage = () => {
   const router = useRouter();
   const {
     handleSubmit,
@@ -68,7 +62,7 @@ const loginPage = () => {
     },
   };
 
-  async function onSubmit(values: FormValues) {
+  async function onSubmit(values) {
     registerUser(values.email, values.password, values.name);
     setIsLogin(true);
     router.push("/top");
@@ -190,4 +184,4 @@ const buttonStyle = {
   borderRadius: 'full',
 };
 
-export default loginPage;
+export default LoginPage;

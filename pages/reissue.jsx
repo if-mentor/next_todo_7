@@ -14,13 +14,7 @@ import { useForm } from "react-hook-form";
 import { Header } from "../components/Header";
 import { useAppContext } from "../context/appContext";
 
-type FormValues = {
-  email: string;
-  password: string;
-  name: string;
-};
-
-const loginPage: React.FC = () => {
+const LoginPage = () => {
   const router = useRouter();
   const {
     handleSubmit,
@@ -40,7 +34,7 @@ const loginPage: React.FC = () => {
     },
   };
 
-  async function onSubmit(values: FormValues) {
+  async function onSubmit(values) {
     forgotPassword(values.email);
     alert(
       `An email has sent to ${values.email} Please check your mail box. If you can't find it in your mail box, please also check your spam folder.`
@@ -124,4 +118,4 @@ const buttonStyle = {
   borderRadius: "full",
 };
 
-export default loginPage;
+export default LoginPage;
