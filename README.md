@@ -1,25 +1,43 @@
 # Todo リスト作成チーム開発（第 7 期）
 
+## HP／アプリ概要
+
+Firebase を利用したログイン機能付きの Todo アプリ
+チームメンバーで TODO を共有し、メンバーの TODO にコメントできる
+
+## 公開 URL
+
+<!-- 仮URL -->
+
+https://next-todo-7.vercel.app/
+
+## 機能
+
+新規登録・ログイン・ログアウト機能(Firebase Auth)
+Todo のソート・絞り込み機能
+ゴミ箱機能
+コメント機能
+
 ## 開発メンバー
 
-- 参加メンバー:
-  - 高橋-t
-  - Maru
-  - Mai Komura
-  - カジ
-  - Takumi Kojo
-  - shinagawa
-  - 雄大
-- 管理： Shogo
-- リーダー:（Issue 管理など）
-- レビュワー: メンバー全員
-- デザイン： nobody
-- サポート: Shogo
+- 参加メンバー（担当）:
+  - Komori Mariko (ユーザー認証機能実装、TODO 新規作成機能実装、TOP ページ DB 連携)
+  - 香村 麻衣（TODO 新規作成ページ UI 作成、コメント投稿機能実装）
+  - カジ（編集ページ UI 作成）
+  - Takumi Kojo（TOP ページ UI 作成＆機能実装、ゴミ箱ページ機能実装）
+  - 品川 敬昇（詳細ページ UI 作成、編集機能実装）
+  - 雄大（ゴミ箱ページ UI 作成、ページネーション実装）
+  - 高橋-t（404 ページ UI 作成）
+- リーダー:品川敬昇（Issue 管理、MTG 進行、議事録作成） （編集済み）
 
 ## 使用技術
 
 - React.js (https://github.com/facebook/react)
 - Next.js (https://github.com/vercel/next.js)
+- Firebase
+- TypeScript
+- Recoil
+- Chakra UI
 
 ## 推奨 VScode 拡張機能
 
