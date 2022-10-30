@@ -1,9 +1,9 @@
 # Todo リスト作成チーム開発（第 7 期）
 
-# HP／アプリ概要
+## HP／アプリ概要
 
 Firebase を利用したログイン機能付きの Todo アプリ
-チームメンバーで TODO を共有し、コメントできる
+チームメンバーで TODO を共有し、メンバーの TODO にコメントできる
 
 ## 公開 URL
 
@@ -34,8 +34,8 @@ Todo のソート・絞り込み機能
 
 - React.js (https://github.com/facebook/react)
 - Next.js (https://github.com/vercel/next.js)
-- firebase
-- typescript
+- Firebase
+- TypeScript
 - Recoil
 - Chakra UI
 
