@@ -1,9 +1,12 @@
+import { Toast } from '@chakra-ui/react';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { Todo } from '../pages/top';
 
+//Todo: toastの型定義
+
 //単一削除
-export const handleDeleteData: (id: string, toast) => void = async (
+export const handleDeleteData: (id: string, toast: any) => void = async (
   id,
   toast
 ) => {
@@ -17,7 +20,7 @@ export const handleDeleteData: (id: string, toast) => void = async (
 };
 
 // 一括削除
-export const handleDeleteAllData: (todos: Todo[], toast) => void = async (
+export const handleDeleteAllData: (todos: Todo[], toast: any) => void = async (
   todos,
   toast
 ) => {
@@ -34,7 +37,7 @@ export const handleDeleteAllData: (todos: Todo[], toast) => void = async (
 };
 
 //単一リストア
-export const handleRestoreData: (id: string, toast) => void = async (
+export const handleRestoreData: (id: string, toast: any) => void = async (
   id,
   toast
 ) => {
@@ -50,7 +53,7 @@ export const handleRestoreData: (id: string, toast) => void = async (
 };
 
 // 一括リストア
-export const handleRestoreAllData: (todos: Todo[], toast) => void = async (
+export const handleRestoreAllData: (todos: Todo[], toast: any) => void = async (
   todos,
   toast
 ) => {

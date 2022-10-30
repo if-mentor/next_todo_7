@@ -30,13 +30,13 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
-} from "firebase/firestore";
-import { db } from "../firebase/firebase";
-import { Header } from "../components/Header";
-import { useAppContext } from "../context/appContext";
-import parseTimestampToDate from "../utils/parseTimestampToDate";
-import { useRecoilValue } from "recoil";
-import { loginState } from "../Atoms/userAtom";
+} from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+import { Header } from '../components/Header';
+import { useAppContext } from '../context/appContext';
+import parseTimestampToDate from '../utils/parseTimestampToDate';
+import { useRecoilValue } from 'recoil';
+import { loginState } from '../Atoms/userAtom';
 
 export type Todo = {
   id: string;
@@ -68,7 +68,7 @@ const Top: React.FC = () => {
   const isLogin = useRecoilValue(loginState);
 
   React.useEffect(() => {
-    !isLogin && router.push("/login");
+    !isLogin && router.push('/login');
   }, [isLogin]);
 
   const filteredTodos: Todo[] = useMemo(() => {
@@ -405,10 +405,14 @@ const Top: React.FC = () => {
                     <Td>
                       <HStack spacing="16px" justify="center">
                         {/* TODO:対象TODOの編集画面に遷移できるようにする */}
-                        {todo.author === user.displayName &&(<button onClick={() => router.push(`${todo.id}/edit`)}>
-                          <Image src="Edit.png" />
-                        </button>)}
-                        {todo.author === user.displayName && (
+                        {user && todo.author === user.displayName && (
+                          <button
+                            onClick={() => router.push(`${todo.id}/edit`)}
+                          >
+                            <Image src="Edit.png" />
+                          </button>
+                        )}
+                        {user && todo.author === user.displayName && (
                           <button onClick={() => trashTodo(todo.id)}>
                             <Image src="Trash.png" />
                           </button>

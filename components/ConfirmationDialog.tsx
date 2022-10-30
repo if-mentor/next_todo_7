@@ -11,7 +11,6 @@ import {
 } from '@chakra-ui/react';
 import { handleDeleteData } from '../utils/delete0rRestore';
 import { handleDeleteAllData } from '../utils/delete0rRestore';
-import { handleRestoreData } from '../utils/delete0rRestore';
 import { handleRestoreAllData } from '../utils/delete0rRestore';
 import { Todo } from '../pages/top';
 
@@ -43,8 +42,6 @@ const ConfirmationDialog: FC<Props> = (props) => {
         return setDialogTitle(['Delete Todo', 'Delete']);
       case 'ALL_DELETE':
         return setDialogTitle(['Delete All Todos', 'Delete']);
-      case 'UNIT_RESTORE':
-        return setDialogTitle(['Restore Todo', 'Restore']);
       case 'ALL_RESTORE':
         return setDialogTitle(['Restore All Todos', 'Restore']);
       default:
@@ -61,10 +58,6 @@ const ConfirmationDialog: FC<Props> = (props) => {
         break;
       case 'ALL_DELETE':
         handleDeleteAllData(todos, toast);
-        break;
-      case 'UNIT_RESTORE':
-        console.log('hi');
-        handleRestoreData(deleteOrRestoreTodoId, toast);
         break;
       case 'ALL_RESTORE':
         handleRestoreAllData(todos, toast);
