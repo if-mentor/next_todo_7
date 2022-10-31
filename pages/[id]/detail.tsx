@@ -93,8 +93,6 @@ const Detail = () => {
     })();
   }, [router.isReady]);
 
-  console.log("userdn", user?.displayName, todo.author);
-
   // コメントの取得
   useEffect(() => {
     if (router.isReady) {

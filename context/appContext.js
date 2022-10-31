@@ -1,20 +1,13 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-  updateProfile,
   sendPasswordResetEmail,
 } from 'firebase/auth';
-import { useRouter } from 'next/router';
 import { auth } from '../firebase/firebase';
 
 export const AppContext = createContext({
   user: { displayName: '' },
-  error: null,
-  signInUser: () => {},
-  registerUser: () => {},
   logoutUser: () => {},
   forgotPassword: () => {},
 });
@@ -24,9 +17,7 @@ export const useAppContext = () => {
 };
 
 export const AppContextProvider = ({ children }) => {
-  const router = useRouter();
   const [user, setUser] = useState(null);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (res) => {
@@ -35,29 +26,9 @@ export const AppContextProvider = ({ children }) => {
       } else {
         setUser(null);
       }
-      setError('');
     });
     return unsubscribe;
   }, []);
-
-  const registerUser = (email, password, name) => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        return updateProfile(auth.currentUser, {
-          displayName: name,
-        });
-      })
-      .catch((err) => {
-        alert(`Sign-up is failed. Error:${err.message}`);
-      });
-  };
-
-  const signInUser = (email, password) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .catch((err) => {
-        alert(`Login is failed. Error:${err.message}`);
-      });
-  };
 
   const logoutUser = () => {
     signOut(auth);
@@ -69,9 +40,6 @@ export const AppContextProvider = ({ children }) => {
 
   const contextValue = {
     user,
-    error,
-    signInUser,
-    registerUser,
     logoutUser,
     forgotPassword,
   };
