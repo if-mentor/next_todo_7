@@ -35,7 +35,6 @@ const Edit = () => {
   const router = useRouter();
   const { isReady } = useRouter();
   const { user } = useAppContext();
-  console.log("user", user)
   const isLogin = useRecoilValue(loginState);
 
   React.useEffect(() => {
